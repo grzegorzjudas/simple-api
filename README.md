@@ -21,15 +21,15 @@ Configuration
 
 **SYSTEM_RESPONSE_DEFAULT**
 
-	A *mime type* of a response, used by default, if none of the requested types are found, and the request accept any other response type (\*/\*). Otherwise, the response is printed to screen by PHP *print_r()* function.
+A *mime type* of a response, used by default, if none of the requested types are found, and the request accept any other response type (\*/\*). Otherwise, the response is printed to screen by PHP *print_r()* function.
 
 **SYSTEM_MODULE_DEFAULT**
 
-	If empty, throws an error when no module name has been provided in the URL. If set, in case of lack of module name, API looks for one in this option and runs it.
+If empty, throws an error when no module name has been provided in the URL. If set, in case of lack of module name, API looks for one in this option and runs it.
 
 **SYSTEM_ALLOW_CROSSORIGIN** <sup>Not Yet Supported</sup>
 
-	Security option, set to true if you want to allow requests from external domains (see [Wikipedia](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) for additional information).
+Security option, set to true if you want to allow requests from external domains (see [Wikipedia](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) for additional information).
 
 
 Responders
