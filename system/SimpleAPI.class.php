@@ -10,15 +10,15 @@
 	class SimpleAPI {
 		private $_headers;
 		private $_url;
-		private $prefferedResponseType;
+		private $preferredResponseType;
 		private $responseCode = 200;
 
 		public function __construct() {
 			$this->_url = SimpleAPI::parseUrl();
-			$this->_headers = new Headers();
 
+			Headers::load();
 			Responders::load();
-			Lang::load($this->_headers->get('Accept-Language'));
+			Lang::load(Headers::get('Accept-Language'));
 		}
 
 		public static function loadModule($name, $params = []) {
@@ -53,7 +53,13 @@
 			$module = new $moduleName($params);
 			$result = $module->init();
 
-			if($result instanceof Response) return $result;
+			if($result instanceof Response) {
+				if(!in_array($module->_getUsedMethod(), $module->_getAllowedMethods())) {
+					Headers::set('Allow', $module->_getAllowedMethods());
+				}
+
+				return $result;
+			}
 			else return Response::success($module->init());
 		}
 
@@ -102,8 +108,9 @@
 		}
 
 		public function createResponse($data) {
-			$reqResponseTypes = $this->_headers->get('Accept');
+			$reqResponseTypes = Headers::get('Accept');
 			$response = '';
+			$preferredResponseType = null;
 
 			foreach($reqResponseTypes as $responseType) {
 				if($responseType === '*/*') continue;
@@ -112,7 +119,7 @@
 
 				if($responder) {
 					$response = $responder->__invoke($data);
-					$this->prefferedResponseType = $responseType;
+					$preferredResponseType = $responseType;
 
 					break;
 				}
@@ -121,19 +128,27 @@
 			if(empty($response)) {
 				if(in_array('*/*', $reqResponseTypes) && defined('SYSTEM_RESPONSE_DEFAULT')) {
 					$response = Responders::get(SYSTEM_RESPONSE_DEFAULT)->__invoke($data);
-					$this->prefferedResponseType = SYSTEM_RESPONSE_DEFAULT;
+					$preferredResponseType = SYSTEM_RESPONSE_DEFAULT;
 				}
 				else {
-					$this->prefferedResponseType = 'none';
+					$preferredResponseType = 'none';
 					return substr(print_r($data, true), 0, -1);
 				}
 			}
 
+			Headers::set('Content-Type', $preferredResponseType . '; charset=' . $this->getPreferredCharset());
+
 			return $response;
 		}
 
-		public function getPreferredResponseType() {
-			return $this->prefferedResponseType;
+		public function getPreferredCharset() {
+			$charset = Headers::get('Accept-Charset')[0];
+
+			if(is_null(Headers::get('Accept-Charset')) && defined("SYSTEM_CHARSET_DEFAULT")) {
+				$charset = SYSTEM_CHARSET_DEFAULT;
+			}
+
+			return $charset;
 		}
 
 		public function getResponseCode() {

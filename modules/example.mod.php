@@ -7,6 +7,9 @@
 		/* protected $_method */
 
 		public function init() {
-			return \Response::success($this->_params);
+			$this->_setAllowedMethods(['POST', 'PUT', 'DELETE']);
+
+			if($this->_isMethodAllowed()) return \Response::success($this->_params);
+			else return \Response::error(\Lang::get('module-invalid-method'), 'system-invalid-method', 405);
 		}
 	}

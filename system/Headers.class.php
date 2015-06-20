@@ -1,32 +1,38 @@
 <?php
 
 	class Headers {
-		private $data;
-		private $negotiable = ['Accept', 'Accept-Language'];
-		private $listable = ['Accept-Encoding'];
+		private static $data;
+		const negotiable = ['Accept', 'Accept-Language', 'Accept-Charset'];
+		const listable = ['Accept-Encoding'];
 
-		public function __construct() {
-			$this->data = $this->parseHeaders(getallheaders());
+		public static function load() {
+			Headers::$data = Headers::parseHeaders(getallheaders());
 
 			/* DEVELOPMENT */
-			// array_unshift($this->data['Accept'], 'application/json');
+			// array_unshift(Headers::$data['Accept'], 'application/json');
 
-			// print_r($this->data);
+			// print_r(Headers::data);
 		}
 
-		public function get($name) {
-			return $this->data[$name];
+		public static function get($name) {
+			return Headers::$data[$name];
 		}
 
-		private function parseHeaders($headers) {
+		public static function set($name, $value) {
+			if(gettype($value) === 'array') $value = implode(', ', $value);
+
+			header($name . ': ' . $value);
+		}
+
+		private static function parseHeaders($headers) {
 			if(gettype($headers) !== 'array') return [];
 
 			foreach($headers as $headerName => $header) {
-				if(in_array($headerName, $this->negotiable)) {
-					$headers[$headerName] = $this->negotiate($header);
+				if(in_array($headerName, Headers::negotiable)) {
+					$headers[$headerName] = Headers::negotiate($header);
 				}
-				if(in_array($headerName, $this->listable)) {
-					$headers[$headerName] = $this->listElements($header);
+				if(in_array($headerName, Headers::listable)) {
+					$headers[$headerName] = Headers::listElements($header);
 				}
 			}
 
@@ -35,11 +41,11 @@
 			return $headers;
 		}
 
-		private function listElements($header) {
+		private static function listElements($header) {
 			return explode(', ', $header);
 		}
 
-		private function negotiate($header) {
+		private static function negotiate($header) {
 			$req = [];
 
 			foreach(explode(',', $header) as $index => $param) {

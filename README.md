@@ -164,6 +164,21 @@ You can also use static functions:
 
 **<em>translateHttpCode($code)</em>** - returns *string* if *\$code* is of *int* type (like *'Bad Request'* for *400*) and the other way, if *string* is provided. Returns *200* or *OK* if invalid value.
 
+Built-in module functionality
+-----------------------------
+
+```PHP _setAllowedMethods((string | array) $methods)
+Sets the allowed methods for a single module. By default, all methods are allowed.
+
+```PHP _getAllowedMethods()
+Returns an array of methods allowed by the module.
+
+```PHP _getUsedMethod()
+Returns a method, that is currently used in the module.
+
+```PHP _isMethodAllowed(string $method)
+Returns true, if method provided in *$method* argument is set as allowed, or false if not. Can be used to exit module with error *\Response* object.
+
 Language
 ---------
 
@@ -171,7 +186,7 @@ You can use multiple languages for your module, depending on the requested langu
 
 ```PHP
 public function init() {
-	return \Response::error(Lang::get('some-custom-error'), 'some-custom-error', 403);
+	return \Response::error(\Lang::get('some-custom-error'), 'some-custom-error', 403);
 }
 ```
 In this example, user will get a message with a text bound to *'some-custom-error'* ID in his requested language. To add a translation of the message in some language, a JSON file needs to be added to *locales/{lang_CODE}/* directory, where *{lang_CODE}* is a short code of a language (like *pl_PL* or *en_US*).

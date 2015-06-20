@@ -9,5 +9,8 @@
 	/* Default language: used when no requested language found and the request allows any other language */
 	define("SYSTEM_LANGUAGE_DEFAULT", "pl-PL");
 
+	/* Default charset: used if no Accept-Charset header is provided */
+	define("SYSTEM_CHARSET_DEFAULT", "utf-8");
+
 	/* Enable or disable Cross Origin requests */
 	define("SYSTEM_ALLOW_CROSSORIGIN", false); //unused
