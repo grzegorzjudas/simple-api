@@ -4,12 +4,6 @@
 
 SimpleAPI is a REST API written in PHP, with a purpose of being a service easy to extend with additional modules and fully compatible with HTTP specification (using HTTP response codes and headers, for example).
 
-----------
-
-[TOC]
-
-----------
-
 
 Installation
 -------------
@@ -21,21 +15,22 @@ Installation
 
 The API does not require any additional installation steps to work. The only thing you'd probably like to look at is the configuration file (*config/default.conf.php*), explained below.
 
-----------
 
 Configuration
 ----------------
 
 **SYSTEM_RESPONSE_DEFAULT**
+
 	A *mime type* of a response, used by default, if none of the requested types are found, and the request accept any other response type (\*/\*). Otherwise, the response is printed to screen by PHP *print_r()* function.
 
 **SYSTEM_MODULE_DEFAULT**
+
 	If empty, throws an error when no module name has been provided in the URL. If set, in case of lack of module name, API looks for one in this option and runs it.
 
 **SYSTEM_ALLOW_CROSSORIGIN** <sup>Not Yet Supported</sup>
+
 	Security option, set to true if you want to allow requests from external domains (see [Wikipedia](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) for additional information).
 
-----------
 
 Responders
 ------------------
@@ -60,7 +55,6 @@ Second argument is the function itself, which is then registered and called, if 
 
 After preparing a file with a new responder, it needs to be saved in *system/responders/* directory with *{filename}.inc.php*, where *{filename}* is any correct name, that can be used in a filename (see note above).
 
-----------
 
 Modules
 --------------
@@ -122,6 +116,7 @@ This example module acts as a proxy, loading a different module with *$name* and
 ```
 
 **<em>$name</em>** - The name of a module you want to load.
+
 **<em>$params</em>** - A string (like */some/example/params*) or an array of strings, containing parameters you want to provide loaded module with.
 
 It returns an object of *\Response* type, with the result.
@@ -144,22 +139,27 @@ Default result, takes one argument, with a result data.
 Response of error type can be used to inform the API that something gone wrong.
 
 **<em>$message</em>** - Your error message to the user
+
 **<em>$errNo</em>** - An error status code that can be used in your application to determine what exactly gone wrong.
+
 **<em>$httpStatusCode</em>** - Optional, if not provided, HTTP status code *400 Bad Request* will be set.
 
 The resulting object has following functionality:
 
 **<em>getData()</em>** - In case of successful execution, returns the resulting data (*string*, *int* or *array*).
+
 **<em>getState()</em>** - Returns current state of the response (*"success"* | *"error"*).
+
 **<em>getCode()</em>** - Returns error code, in case of error, or 0 in case of success.
+
 **<em>gerError()</em>** - Returns error message as a string or empty string, in case of success.
+
 **<em>getHttpStatus()</em>** - Returns *int* code of a HTTP status set by requested module.
 
 You can also use static functions:
 
 **<em>translateHttpCode($code)</em>** - returns *string* if *\$code* is of *int* type (like *'Bad Request'* for *400*) and the other way, if *string* is provided. Returns *200* or *OK* if invalid value.
 
-----------
 
 License
 ---------
