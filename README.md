@@ -164,6 +164,32 @@ You can also use static functions:
 
 **<em>translateHttpCode($code)</em>** - returns *string* if *\$code* is of *int* type (like *'Bad Request'* for *400*) and the other way, if *string* is provided. Returns *200* or *OK* if invalid value.
 
+Language
+---------
+
+You can use multiple languages for your module, depending on the requested language. To translate a message to the user to his requested language, you have to use *\Lang* class.
+
+```PHP
+public function init() {
+	return \Response::error(Lang::get('some-custom-error'), 'some-custom-error', 403);
+}
+```
+In this example, user will get a message with a text bound to *'some-custom-error'* ID in his requested language. To add a translation of the message in some language, a JSON file needs to be added to *locales/{lang_CODE}/* directory, where *{lang_CODE}* is a short code of a language (like *pl_PL* or *en_US*).
+Multiple JSON files can be added to each directory, and all will be parsed by SimpleAPI (if translation already exists, it will be overwritten - filename alphabetical priority is used to read files).
+
+###Language file structure
+
+```JSON
+{
+	"some-custom-error": "An error ocurred. Please, contact the administrator.",
+	"some-other-error": "Another one."
+}
+```
+
+> Although any valid string can be used as ID, it is highly recommended to use *"module-modulename-msgcode"* syntax, to prevent unwanted overwriting of translations (SimpleAPI uses *"system-X-Y"* syntax for internal errors).
+
+> Requested language is provided by *'Accept-Language'* header. It uses *'en-US'* syntax (dashes, instead of underscores), but it is converted to underscore syntax by SimpleAPI. 
+
 
 License
 ---------
