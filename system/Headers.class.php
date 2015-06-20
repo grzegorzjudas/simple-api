@@ -9,7 +9,7 @@
 			$this->data = $this->parseHeaders(getallheaders());
 
 			/* DEVELOPMENT */
-			array_unshift($this->data['Accept'], 'application/json');
+			// array_unshift($this->data['Accept'], 'application/json');
 
 			// print_r($this->data);
 		}

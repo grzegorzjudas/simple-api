@@ -7,10 +7,10 @@
 
 	$response = $api->run();
 
-	$response_format = $api->getPreferredResponseType();
-	$response_code = $api->getResponseCode();
+	/* Set the Content-Type of a document */
+	header('Content-Type: ' . $api->getPreferredResponseType());
 
-	header('Content-Type: ' . $response_format);
-	http_response_code($response_code);
+	/* Set HTTP status code */
+	http_response_code($api->getResponseCode());
 
 	exit($response);

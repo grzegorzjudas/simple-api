@@ -2,7 +2,7 @@
 ===================
 
 
-SimpleAPI is a REST API written in PHP, with a purpose of being a service easy to extend with additional modules and fully compatible with HTTP specification (using HTTP response codes and headers, for example).
+SimpleAPI is a REST API written in PHP, with a purpose of being a service easy to extend with additional modules and in accordiance with HTTP specification (using HTTP response codes and headers, for example).
 
 
 Installation
@@ -26,6 +26,10 @@ A *mime type* of a response, used by default, if none of the requested types are
 **SYSTEM_MODULE_DEFAULT**
 
 If empty, throws an error when no module name has been provided in the URL. If set, in case of lack of module name, API looks for one in this option and runs it.
+
+**SYSTEM_LANGUAGE_DEFAULT**
+
+If provided, API falls back to this language in case no language requested in Accept-Language header is found and the requests accept any other language (*).
 
 **SYSTEM_ALLOW_CROSSORIGIN** <sup>Not Yet Supported</sup>
 
