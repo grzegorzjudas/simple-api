@@ -71,8 +71,9 @@ Modules
 namespace Module\yourmodulename;
 
 class Module extends \MBase implements \MInterface {
-	/* protected $_params */
 	/* protected $_method */
+	/* protected $_params */
+	/* protected $_data */
 
 	public function init() {
 		// the code of your module
@@ -99,6 +100,12 @@ You are allowed to call any other method of this object from this point on, or l
 Data returned by this *init()* function will be the overall result of the module. This value can be of any type, like a *string* or an *array*, but using *\Response::success($data)* is recommended.
 
 > Returning any value other than od *\Response* type will cause it to be converted to it by SimpleAPI. Mind that you can only return successful responses when not using *\Response* object.
+
+If using *\MBase*, module gets access to additional class fields:
+
+**<em>$_method</em>** - Currently used method ( DELETE | GET | OPTIONS | POST | PUT )
+**<em>$_params</em>** - An array of URL parameters (separated by */* sign)
+**<em>$_data</em>** - An array or object containing data sent to API with *PUT*/*DELETE* methods, equals *$_GET* if *GET* method used and *$_POST* if *POST* method used
 
 ###Using multiple modules
 

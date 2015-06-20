@@ -3,8 +3,9 @@
 	namespace Module\example;
 
 	class Module extends \MBase implements \MInterface {
-		/* protected $_params */
 		/* protected $_method */
+		/* protected $_params */
+		/* protected $_data */
 
 		public function init() {
 			$this->_setAllowedMethods(['POST', 'PUT', 'DELETE']);
