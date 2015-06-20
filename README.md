@@ -99,13 +99,15 @@ You are allowed to call any other method of this object from this point on, or l
 
 Data returned by this *init()* function will be the overall result of the module. This value can be of any type, like a *string* or an *array*, but using *\Response::success($data)* is recommended.
 
-> Returning any value other than od *\Response* type will cause it to be converted to it by SimpleAPI. Mind that you can only return successful responses when not using *\Response* object.
+> Returning any value other than of *\Response* type will cause it to be converted to it by SimpleAPI. Mind that you can only return successful responses when not using *\Response* object.
 
 If using *\MBase*, module gets access to additional class fields:
 
 **<em>$_method</em>** - Currently used method ( DELETE | GET | OPTIONS | POST | PUT )
+
 **<em>$_params</em>** - An array of URL parameters (separated by */* sign)
-**<em>$_data</em>** - An array or object containing data sent to API with *PUT*/*DELETE* methods, equals *$_GET* if *GET* method used and *$_POST* if *POST* method used
+
+**<em>$_data</em>** - An array or object containing data sent to API with *PUT* / *DELETE* methods, equals *$_GET* if *GET* method used and *$_POST* if *POST* method used
 
 ###Using multiple modules
 
@@ -174,16 +176,24 @@ You can also use static functions:
 Built-in module functionality
 -----------------------------
 
-```PHP _setAllowedMethods((string | array) $methods)
+```PHP 
+_setAllowedMethods((string | array) $methods)
+```
 Sets the allowed methods for a single module. By default, all methods are allowed.
 
-```PHP _getAllowedMethods()
+```PHP
+_getAllowedMethods()
+```
 Returns an array of methods allowed by the module.
 
-```PHP _getUsedMethod()
+```PHP
+_getUsedMethod()
+```
 Returns a method, that is currently used in the module.
 
-```PHP _isMethodAllowed(string $method)
+```PHP
+_isMethodAllowed(string $method)
+```
 Returns true, if method provided in *$method* argument is set as allowed, or false if not. Can be used to exit module with error *\Response* object.
 
 Language
