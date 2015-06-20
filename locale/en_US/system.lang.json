@@ -1,0 +1,7 @@
+{
+	"module-cannot-callback": "Recursion error. Module cannot call itself.",
+	"module-not-found": "Module does not exist.",
+	"module-no-module": "Could not find appropriate module.",
+	"module-invalid-declaration": "Invalid or corrupted module file. Module has to implement standard module interface.",
+	"module-not-provided": "No module name provided."
+}
