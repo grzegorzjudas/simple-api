@@ -14,3 +14,13 @@
 
 	/* Enable or disable Cross Origin requests */
 	define("SYSTEM_ALLOW_CROSSORIGIN", false); //unused
+
+	define("DB_CRED_HOST", "localhost");
+
+	define("DB_CRED_USER", "root");
+
+	define("DB_CRED_PWD", "root");
+
+	define("DB_CRED_DBNAME", "");
+	
+	define("DB_CRED_PORT", 3306);

@@ -10,6 +10,7 @@
 
 			/* DEVELOPMENT */
 			// array_unshift(Headers::$data['Accept'], 'application/json');
+			// Headers::$data['Token'] = 'asdasdasda23eq9enh9ue1x02e32z3ex3rc23rc';
 
 			// print_r(Headers::data);
 		}

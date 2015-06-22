@@ -3,6 +3,7 @@
 	require 'system/Response.class.php';
 	require 'system/Headers.class.php';
 	require 'system/Lang.class.php';
+	require 'system/DB.class.php';
 	require 'system/Responders.class.php';
 	require 'system/MBase.class.php';
 	require 'system/MInterface.int.php';
@@ -10,14 +11,13 @@
 	class SimpleAPI {
 		private $_headers;
 		private $_url;
-		private $preferredResponseType;
-		private $responseCode = 200;
 
 		public function __construct() {
 			$this->_url = SimpleAPI::parseUrl();
 
 			Headers::load();
 			Responders::load();
+			DB::load();
 			Lang::load(Headers::get('Accept-Language'));
 		}
 
@@ -51,15 +51,24 @@
 			}
 
 			$module = new $moduleName($params);
-			$result = $module->init();
 
-			if($result instanceof Response) {
-				if(!in_array($module->_getUsedMethod(), $module->_getAllowedMethods())) {
-					Headers::set('Allow', $module->_getAllowedMethods());
+			/* Check module requirements first */
+			if(method_exists($module, 'setRequirements')) {
+				$module->setRequirements();
+				$requirementsPassed = $module->requirementsResult();
+
+				if(!$requirementsPassed) {
+					return Response::error(Lang::get('module-no-requirements'), 'module-no-requirements');
 				}
 
-				return $result;
+				if($requirementsPassed instanceof Response && $requirementsPassed->getState() === Response::STATE_ERROR) {
+					return $requirementsPassed;
+				}
 			}
+
+			$result = $module->init();
+
+			if($result instanceof Response) return $result;
 			else return Response::success($module->init());
 		}
 
@@ -101,8 +110,10 @@
 				];
 			}
 			if(!is_null($result->getHttpStatus())) {
-				$this->responseCode = $result->getHttpStatus();
+				http_response_code($result->getHttpStatus());
 			}
+
+			DB::close();
 
 			return $this->createResponse($response);
 		}
@@ -149,9 +160,5 @@
 			}
 
 			return $charset;
-		}
-
-		public function getResponseCode() {
-			return $this->responseCode;
 		}
 	}

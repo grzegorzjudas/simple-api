@@ -7,10 +7,13 @@
 		/* protected $_params */
 		/* protected $_data */
 
-		public function init() {
-			$this->_setAllowedMethods(['POST', 'PUT', 'DELETE']);
+		public function setRequirements() {
+			$this->_setDatabaseRequired(true);
+			$this->_setUserRequired(true);
+			$this->_setAllowedMethods(['GET', 'PUT', 'DELETE']);
+		}
 
-			if($this->_isMethodAllowed()) return \Response::success($this->_params);
-			else return \Response::error(\Lang::get('module-invalid-method'), 'system-invalid-method', 405);
+		public function init() {
+			return \Response::success($this->_params);
 		}
 	}

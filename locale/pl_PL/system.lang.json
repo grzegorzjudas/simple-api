@@ -4,5 +4,8 @@
 	"module-no-module": "Nie udało się znaleźć odpowiedniego modułu.",
 	"module-invalid-declaration": "Niepoprawny plik modułu. Moduł musi implementować standardowy interfejs.",
 	"module-invalid-method": "Moduł nie obsługuje tej metody zapytania.",
-	"module-not-provided": "Nie podano nazwy modułu."
+	"module-not-provided": "Nie podano nazwy modułu.",
+	"module-no-requirements": "Nie spełniono wymagań modułu.",
+	"user-not-signedin": "Brak dostępu. Nie zalogowano, nieprawidłowe dane użytkownika lub token.",
+	"db-not-connected": "Brak połączenia z bazą danych."
 }
