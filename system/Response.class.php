@@ -20,11 +20,12 @@
 			return $response;
 		}
 
-		public static function success($data) {
+		public static function success($data, $httpStatus = null) {
 			$response = new Response();
 
 			$response->setState(Response::STATE_SUCCESS);
 			$response->setData($data);
+			if(!is_null($httpStatus)) $response->setHttpStatus($httpStatus);
 
 			return $response;
 		}

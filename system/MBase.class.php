@@ -8,6 +8,7 @@
 
 		private $rDatabase = false;
 		private $rUser = false;
+		private $rFields = [];
 		private $rMethods = ['DELETE', 'GET', 'OPTIONS', 'POST', 'PUT'];
 
 		public function __construct($params, $method = null) {
@@ -36,6 +37,11 @@
 				return Response::error(Lang::get('module-invalid-method'), 'system-invalid-method', 405);
 			}
 
+			/* Check if all fields are present */
+			if(!$this->_requiredFieldsPresent()) {
+				return Response::error(Lang::get('module-no-requirements'), 'module-no-requirements');
+			}
+
 			return true;
 		}
 
@@ -56,6 +62,14 @@
 			if(is_null($token)) return false;
 
 			return !!$this->_getUserSession($token);
+		}
+
+		protected function _requiredFieldsPresent() {
+			foreach($this->rFields as $fieldKey) {
+				if(is_null($this->_data[$fieldKey])) return false;
+			}
+
+			return true;
 		}
 
 		protected function _getModuleName() {
@@ -104,12 +118,16 @@
 			$this->rMethods = $methods;
 		}
 
-		protected function _setDatabaseRequired($val) {
-			$this->rDatabase = !!$val;
+		protected function _setDatabaseRequired($bool) {
+			$this->rDatabase = !!$bool;
 		}
 
-		protected function _setUserRequired($val) {
-			$this->rUser = !!$val;
+		protected function _setUserRequired($bool) {
+			$this->rUser = !!$bool;
+		}
+
+		protected function _setFieldsRequired($arr) {
+			$this->rFields = $arr;
 		}
 
 		private function _parseData() {

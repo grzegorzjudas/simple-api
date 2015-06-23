@@ -21,6 +21,18 @@
 	/* Token lifetime in seconds */
 	define("SEC_TOKEN_LIFETIME", 86400);
 
+	/* Minimum username length requirement */
+	define("SEC_USER_MINLEN", 6);
+
+	/* Minimum password length requirement */
+	define("SEC_PWD_MINLEN", 6);
+
+	/* Whether e-mail confirmation when registering is required */
+	define("SEC_EMAIL_CONFIRM", false);
+
+	/* Allow accounts to share e-mail address */
+	define("SEC_EMAIL_UNIQUE", true);
+
 	/* Data encryption (tokens, passswords, etc) */
 	define("SEC_DATA_ENCRYPTION", "sha512");
 

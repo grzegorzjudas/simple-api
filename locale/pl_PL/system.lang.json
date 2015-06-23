@@ -7,7 +7,12 @@
 	"module-not-provided": "Nie podano nazwy modułu.",
 	"module-no-requirements": "Nie spełniono wymagań modułu.",
 	"user-not-signedin": "Brak dostępu. Nie zalogowano, nieprawidłowe dane użytkownika lub token.",
+	"user-not-unique": "Użytkownik z podanym loginem lub adresem e-mail już istnieje.",
 	"user-no-data": "Wymagane jest podanie użytkownika i hasła.",
 	"user-invalid-token": "Token wygasł lub jest niepoprawny.",
+	"user-invalid-email": "Podaj poprawny adres e-mail.",
+	"user-invalid-name": "Nazwa użytkownika jest za krótka.",
+	"user-invalid-pwd": "Hasło jest za krótkie.",
+	"user-no-requirements": "Nie wszystkie wymagane pola zostały podane.",
 	"db-not-connected": "Brak połączenia z bazą danych."
 }

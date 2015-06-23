@@ -13,15 +13,25 @@
 		/* protected $_data */
 
 		public function setRequirements() {
+			/* DEVELOPMENT */
+			// $this->_method = "PUT";
+			// $this->_data[DB_COL_USER] = "user00";
+			// $this->_data[DB_COL_PWD] = hash(SEC_DATA_ENCRYPTION, "tajemnehaslo");
+			// $this->_data[DB_COL_EMAIL] = "user00@simpleapi.com";
+
+			/* user1 */
+			// $_SERVER['PHP_AUTH_USER'] = 'b4275b899e66e4961338099e2ff0a4065c07d30ccc3f7ad44d8cee6b197be24453463b68ad5d364b71b4f4bfc0650fe3fd25dada71557bb6f4050bb433e46c50';
+			// $_SERVER['PHP_AUTH_PW'] = 'b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86';
+			
+			/* user2 */
+			// $_SERVER['PHP_AUTH_USER'] = '887ad6a742d43ad98d149b3c7f3de605c9bdf43dc148e4519cbfa021833bdba78d2a19eaf7dbd4158447651ee7f75dbcbc1f3a3199137c77f6af066216161397';
+			// $_SERVER['PHP_AUTH_PW'] = '48c8ff36caedd22d610d034e8a3ea1b0e8a79d8e046c76a197d452b2689322ccc53350a67682e976e8cdadd8d3fd892beb3e64fddef3418ed11a9bec7ea1cef3';
+			
 			$this->_setDatabaseRequired(true);
 			$this->_setAllowedMethods(['GET', 'POST', 'PUT']);
 		}
 
 		public function init() {
-			/* DEVELOPMENT */
-			// $this->_method = "PUT";
-			// $_SERVER['PHP_AUTH_USER'] = 'b4275b899e66e4961338099e2ff0a4065c07d30ccc3f7ad44d8cee6b197be24453463b68ad5d364b71b4f4bfc0650fe3fd25dada71557bb6f4050bb433e46c50';
-			// $_SERVER['PHP_AUTH_PW'] = 'b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86';
 
 			switch($this->_method) {
 				case "GET": return $this->getUser();
@@ -57,7 +67,44 @@
 		}
 
 		public function createUser() {
-			return [];
+			$this->_setFieldsRequired([DB_COL_USER, DB_COL_PWD, DB_COL_EMAIL]);
+
+			/* Not all required fields available */
+			if(!$this->_requiredFieldsPresent()) {
+				return Response::error(Lang::get('user-no-requirements'), 'user-no-requirements');
+			}
+
+			/* Invalid username */
+			if(strlen($this->_data[DB_COL_USER]) < SEC_USER_MINLEN) {
+				return Response::error(Lang::get('user-invalid-name'), 'user-invalid-name');
+			}
+
+			/* Invalid password */
+			if(strlen($this->_data[DB_COL_PWD]) < SEC_PWD_MINLEN) {
+				return Response::error(Lang::get('user-invalid-pwd'), 'user-invalid-pwd');
+			}
+
+			/* Invalid e-mail */
+			if(!filter_var($this->_data[DB_COL_EMAIL], FILTER_VALIDATE_EMAIL)) {
+				return Response::error(Lang::get('user-invalid-email'), 'user-invalid-email');
+			}
+
+			$u = $this->_data;
+			$u[DB_COL_LOGIN] = hash(SEC_DATA_ENCRYPTION, $this->_data[DB_COL_USER]);
+
+			/* Check if user/e-mail exists */
+			$query = "SELECT id FROM " . DB_TABLE_USERS . " WHERE " . DB_COL_LOGIN . " = '" . $u[DB_COL_LOGIN] . "'";
+			if(SEC_EMAIL_UNIQUE) $query .= " OR " . DB_COL_EMAIL . " = '" . $u[DB_COL_EMAIL] . "'";
+			$q = $this->_db->query($query);
+
+			if($q->num_rows > 0) {
+				return Response::error(Lang::get('user-not-unique'), 'user-not-unique');
+			}
+
+			$query = "INSERT INTO " . DB_TABLE_USERS . " VALUES(null, '{$u[DB_COL_LOGIN]}', '{$u[DB_COL_USER]}', '{$u[DB_COL_PWD]}', '{$u[DB_COL_EMAIL]}')";
+			$q = $this->_db->query($query);
+
+			return Response::success(null, 201);
 		}
 
 		public function signUser() {
