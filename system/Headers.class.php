@@ -9,8 +9,8 @@
 			Headers::$data = Headers::parseHeaders(getallheaders());
 
 			/* DEVELOPMENT */
-			array_unshift(Headers::$data['Accept'], 'application/json');
-			Headers::$data['Token'] = '5f5809444f2663da1bc81ded1f82eb12b1a862808555a7a1cb236332bdfcfd8676a90f7e54da87b578c8d3e5eab020ce4c9b80cc309ae1079823d4a335273622';
+			// array_unshift(Headers::$data['Accept'], 'application/json');
+			// Headers::$data['Token'] = '5f5809444f2663da1bc81ded1f82eb12b1a862808555a7a1cb236332bdfcfd8676a90f7e54da87b578c8d3e5eab020ce4c9b80cc309ae1079823d4a335273622';
 
 			// print_r(Headers::data);
 		}

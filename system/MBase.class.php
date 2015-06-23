@@ -21,19 +21,19 @@
 		public function requirementsResult() {
 			/* Check database connection */
 			if($this->rDatabase && !$this->_isDatabaseConnected()) {
-				return \Response::error(\Lang::get('db-not-connected'), 'db-not-connected', 500);
+				return Response::error(Lang::get('db-not-connected'), 'db-not-connected', 500);
 			}
 
 			/* Check whether user is signed in */
 			if($this->rUser && !$this->_isUserSignedIn()) {
-				return \Response::error(\Lang::get('user-not-signedin'), 'user-not-signedin', 401);
+				return Response::error(Lang::get('user-not-signedin'), 'user-not-signedin', 401);
 			}
 
 			/* Check if module allows HTTP method used */
 			if(!$this->_isMethodAllowed()) {
 				Headers::set('Allow', $this->_getAllowedMethods());
 
-				return \Response::error(\Lang::get('module-invalid-method'), 'system-invalid-method', 405);
+				return Response::error(Lang::get('module-invalid-method'), 'system-invalid-method', 405);
 			}
 
 			return true;

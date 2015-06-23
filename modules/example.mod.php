@@ -2,6 +2,11 @@
 
 	namespace Module\example;
 
+	use \Response;
+	use \Lang;
+	use \Headers;
+	use \SimpleAPI;
+
 	class Module extends \MBase implements \MInterface {
 		/* protected $_method */
 		/* protected $_params */
@@ -14,6 +19,6 @@
 		}
 
 		public function init() {
-			return \Response::success($this->_params);
+			return Response::success($this->_params);
 		}
 	}

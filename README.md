@@ -98,6 +98,8 @@ Modules
 
 namespace Module\yourmodulename;
 
+use Response;
+
 class Module extends \MBase implements \MInterface {
 	/* protected $_method */
 	/* protected $_params */
@@ -106,7 +108,7 @@ class Module extends \MBase implements \MInterface {
 	public function init() {
 		// the code of your module
 
-		return \Response::success('data_to_return');
+		return Response::success('data_to_return');
 	}
 }
 ```
@@ -125,9 +127,9 @@ The module itself needs to implement default module interface *\MInterface*, and
 Module needs to define at least one public function *init()*, which is called when the module is being loaded - that is the entry point for the whole module.
 You are allowed to call any other method of this object from this point on, or load another module (see **Using multiple modules** section).
 
-Data returned by this *init()* function will be the overall result of the module. This value can be of any type, like a *string* or an *array*, but using *\Response::success($data)* is recommended.
+Data returned by this *init()* function will be the overall result of the module. This value can be of any type, like a *string* or an *array*, but using *Response::success($data)* is recommended.
 
-> Returning any value other than of *\Response* type will cause it to be converted to it by SimpleAPI. Mind that you can only return successful responses when not using *\Response* object.
+> Returning any value other than of *Response* type will cause it to be converted to it by SimpleAPI. Mind that you can only return successful responses when not using *Response* object.
 
 If using *\MBase*, module gets access to additional class fields:
 
@@ -142,9 +144,11 @@ If using *\MBase*, module gets access to additional class fields:
 It is possible to use a different module, or multiple different modules when using one of them.
 
 ```PHP
+use \SimpleAPI;
+
 public function init() {
 	$name = 'someothermodule';
-	$someOtherModule = \SimpleAPI::loadModule($name, $this->_params);
+	$someOtherModule = SimpleAPI::loadModule($name, $this->_params);
 
 	return $someOtherModule;
 }
@@ -153,14 +157,14 @@ public function init() {
 This example module acts as a proxy, loading a different module with *$name* and providing it with current URL parameters.
 
 ```PHP
-\Response \SimpleAPI::loadModule(string $name, (string | array) $params);
+Response SimpleAPI::loadModule(string $name, (string | array) $params);
 ```
 
 **<em>$name</em>** - The name of a module you want to load.
 
 **<em>$params</em>** - A string (like */some/example/params*) or an array of strings, containing parameters you want to provide loaded module with.
 
-It returns an object of *\Response* type, with the result.
+It returns an object of *Response* type, with the result.
 
 > For security reasons, you cannot use the same module as the one you're calling from (to prevent infinite loop of recursion. Doing this will cause the calling module to fail with an error code of *'module-cannot-callback'*.
 
@@ -170,12 +174,12 @@ It returns an object of *\Response* type, with the result.
 You can use different kinds of responses to inform SimpleAPI of the result of your module.
 
 ```PHP
-\Response \Response::success((string | int | array) $data);
+Response Response::success((string | int | array) $data);
 ```
 Default result, takes one argument, with a result data.
 
 ```PHP
-\Response \Response::error(string $message, (string | int) $errNo[, (string | int) $httpStatusCode]);
+Response Response::error(string $message, (string | int) $errNo[, (string | int) $httpStatusCode]);
 ```
 Response of error type can be used to inform the API that something gone wrong.
 
@@ -206,6 +210,8 @@ You can also use static functions:
 Your module may need to have different starting requirements to be able to work properly at all, like database connection, specific HTTP method used or user authentication. For that purpose, for ease of use and to minimize the amount of code needed for each component, you can use optional module class method that checks everything for you.
 
 ```PHP
+use \Response;
+
 class Module extends \BModule impements \MInterface {
 	public function setRequirements() {
 		$this->_setDatabaseRequired(true);
@@ -214,7 +220,7 @@ class Module extends \BModule impements \MInterface {
 	}
 
 	public function init() {
-		return \Result::success('your-success-data');
+		return Response::success('your-success-data');
 	}
 }
 ```
@@ -239,7 +245,7 @@ Returns an array of methods allowed by the module.
 ```PHP
 _isMethodAllowed(string $method)
 ```
-Returns true, if method provided in *$method* argument is set as allowed, or false if not. Can be used to exit module with error *\Response* object.
+Returns true, if method provided in *$method* argument is set as allowed, or false if not. Can be used to exit module with error *Response* object.
 
 User Authentication
 -------------------
@@ -262,7 +268,7 @@ or, in *init()* function:
 ```PHP
 public function init() {
 	if(!$this->isUserSignedIn()) {
-		return \Response::error(\Lang::get('user-not-signedin'), 'user-not-signedin', 401);
+		return Response::error(Lang::get('user-not-signedin'), 'user-not-signedin', 401);
 	}
 }
 ```
@@ -272,8 +278,10 @@ public function init() {
 ```PHP
 /* Returns current user e-mail address */
 
+use \SimpleAPI;
+
 public function init() {
-	$userdata = \SimpleAPI::loadModule('user')->getResult();
+	$userdata = SimpleAPI::loadModule('user')->getResult();
 
 	return $userdata[DB_COL_EMAIL];
 }
@@ -300,11 +308,11 @@ When valid, this will create a token, set it as a response header or cookie and 
 Language
 ---------
 
-You can use multiple languages for your module, depending on the requested language. To translate a message to the user to his requested language, you have to use *\Lang* class.
+You can use multiple languages for your module, depending on the requested language. To translate a message to the user to his requested language, you have to use *Lang* class.
 
 ```PHP
 public function init() {
-	return \Response::error(\Lang::get('some-custom-error'), 'some-custom-error', 403);
+	return Response::error(Lang::get('some-custom-error'), 'some-custom-error', 403);
 }
 ```
 In this example, user will get a message with a text bound to *'some-custom-error'* ID in his requested language. To add a translation of the message in some language, a JSON file needs to be added to *locales/{lang_CODE}/* directory, where *{lang_CODE}* is a short code of a language (like *pl_PL* or *en_US*).

@@ -2,6 +2,11 @@
 
 	namespace Module\login;
 
+	use \Response;
+	use \Lang;
+	use \Headers;
+	use \SimpleAPI;
+
 	class Module extends \MBase implements \MInterface {
 		/* protected $_method */
 		/* protected $_params */
@@ -15,6 +20,6 @@
 
 		public function init() {
 			/* Proxy module for GET user/ */
-			return \SimpleAPI::loadModule('user', [], 'GET');
+			return SimpleAPI::loadModule('user', [], 'GET');
 		}
 	}
