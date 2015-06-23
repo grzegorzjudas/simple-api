@@ -10,7 +10,7 @@
 		public function setRequirements() {
 			$this->_setDatabaseRequired(true);
 			$this->_setUserRequired(true);
-			$this->_setAllowedMethods(['GET', 'PUT', 'DELETE']);
+			$this->_setAllowedMethods(['GET']);
 		}
 
 		public function init() {

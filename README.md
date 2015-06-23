@@ -51,6 +51,18 @@ Password for database connections (MySQLi).
 
 Port for database connections (MySQLi), defaults to 3306 (standard MySQLi port).
 
+**SEC_TOKEN_HEADER**
+
+Boolean, set to true (default) if you want to use token communication by using headers, otherwise, cookies will be used.
+
+**SEC_TOKEN_LIFETIME**
+
+Time in seconds of a token lifetime. After that time has passed from token creation, it will no longer be a valid token.
+
+**DB_TABLE_\*, DB_COL_\***
+
+You can use those values to change the column names in database that will be used for certain functionality. Changing them on live server is not recommended. You can use them before SimpleAPI is installed, for it to create database with different column names to begin with.
+
 
 Responders
 ------------------
@@ -227,6 +239,62 @@ Returns an array of methods allowed by the module.
 _isMethodAllowed(string $method)
 ```
 Returns true, if method provided in *$method* argument is set as allowed, or false if not. Can be used to exit module with error *\Response* object.
+
+User Authentication
+-------------------
+
+
+###In-module usage
+
+SimpleAPI provides embeded *user* module and connected functionality.
+
+**Checking whether user is signed in**
+
+```PHP
+public function setRequirements() {
+	$this->_setUserRequired(true);
+}
+```
+
+or, in *init()* function:
+
+```PHP
+public function init() {
+	if(!$this->isUserSignedIn()) {
+		return \Response::error(\Lang::get('user-not-signedin'), 'user-not-signedin', 401);
+	}
+}
+```
+
+**Getting current user data**
+
+```PHP
+/* Returns current user e-mail address */
+
+public function init() {
+	$userdata = \SimpleAPI::loadModule('user')->getResult();
+
+	return $userdata[DB_COL_EMAIL];
+}
+```
+
+**Signing In**
+
+SimpleAPI uses *Token* header to keep the logging information between the requests or, if *SEC_TOKEN_HEADER* is disabled, a cookie with the same name. It's recommended to use *user* module provided to manage users.
+
+###Built-in module usage
+
+> GET/ {api_address}/user/
+
+Provides user information (username, email) when provided with a Token.
+
+> PUT {api_address}/user/
+
+Signs user in by providing user credentials (username, password) in encrypted form (encryption used is in SEC_DATA_ENCRYPTION configuration option, i.e. of JavaScript:
+
+Authorization: 'Basic' + btoa(encrypt(username) + ':' + encrypt(password))
+
+When valid, this will create a token, set it as a response header or cookie and append it to userdata sent back in response. Note that Token will not be set as a header anymore for responses, but will be expected as a request header in all future calls.
 
 Language
 ---------

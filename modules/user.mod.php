@@ -92,6 +92,7 @@
 			else setcookie('Token', $token, defined('SEC_TOKEN_LIFETIME') ? SEC_TOKEN_LIFETIME : 86400);
 
 			return [
+				'token' => $token,
 				'username' => $result['username'],
 				'email' => $result['email']
 			];
