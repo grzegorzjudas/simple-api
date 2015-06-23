@@ -21,8 +21,9 @@
 			Lang::load(Headers::get('Accept-Language'));
 		}
 
-		public static function loadModule($name, $params = []) {
+		public static function loadModule($name, $params = [], $method = 'GET') {
 			$moduleName = 'Module\\' . $name . '\\Module';
+
 			if(gettype($params) === 'string') $params = SimpleAPI::parseUrl($params);
 
 			/* If module already loaded, prevent recursive calling */
@@ -50,7 +51,7 @@
 				}
 			}
 
-			$module = new $moduleName($params);
+			$module = new $moduleName($params, $method);
 
 			/* Check module requirements first */
 			if(method_exists($module, 'setRequirements')) {
@@ -69,7 +70,7 @@
 			$result = $module->init();
 
 			if($result instanceof Response) return $result;
-			else return Response::success($module->init());
+			else return Response::success($result);
 		}
 
 		public static function parseUrl($string = null) {
@@ -91,7 +92,7 @@
 			}
 
 			if(!is_null($moduleName)) {
-				$result = SimpleAPI::loadModule($moduleName, array_splice($this->_url, 1));
+				$result = SimpleAPI::loadModule($moduleName, array_splice($this->_url, 1), 'GET');
 			}
 			else {
 				$result = Response::error(Lang::get('module-not-provided'), 'module-not-provided', 400);

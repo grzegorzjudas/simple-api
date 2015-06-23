@@ -15,12 +15,31 @@
 	/* Enable or disable Cross Origin requests */
 	define("SYSTEM_ALLOW_CROSSORIGIN", false); //unused
 
+	/* Use HTTP Authentication with token passed in HTTP Header */
+	define("SEC_TOKEN_HEADER", true);
+
+	/* Token lifetime in seconds */
+	define("SEC_TOKEN_LIFETIME", 86400);
+
+	/* Data encryption (tokens, passswords, etc) */
+	define("SEC_DATA_ENCRYPTION", "sha512");
+
+	/* Database connection credentials */
 	define("DB_CRED_HOST", "localhost");
-
 	define("DB_CRED_USER", "root");
-
 	define("DB_CRED_PWD", "root");
-
 	define("DB_CRED_DBNAME", "");
-	
 	define("DB_CRED_PORT", 3306);
+
+	/* Database features table names */
+	define("DB_TABLE_USERS", "users");
+	define("DB_TABLE_SESSIONS", "sessions");
+
+	/* Database features column names */
+	define("DB_COL_USER", "username");
+	define("DB_COL_LOGIN", "login");
+	define("DB_COL_PWD", "password");
+	define("DB_COL_EMAIL", "email");
+	define("DB_COL_TOKEN", "token");
+	define("DB_COL_CREATED", "created");
+	define("DB_COL_LASTUSED", "last_used");

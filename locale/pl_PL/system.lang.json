@@ -7,5 +7,7 @@
 	"module-not-provided": "Nie podano nazwy modułu.",
 	"module-no-requirements": "Nie spełniono wymagań modułu.",
 	"user-not-signedin": "Brak dostępu. Nie zalogowano, nieprawidłowe dane użytkownika lub token.",
+	"user-no-data": "Wymagane jest podanie użytkownika i hasła.",
+	"user-invalid-token": "Token wygasł lub jest niepoprawny.",
 	"db-not-connected": "Brak połączenia z bazą danych."
 }

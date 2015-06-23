@@ -35,6 +35,22 @@ If provided, API falls back to this language in case no language requested in Ac
 
 Security option, set to true if you want to allow requests from external domains (see [Wikipedia](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) for additional information).
 
+**DB_CRED_HOST**
+
+Hostname for database connections (MySQLi).
+
+**DB_CRED_USER**
+
+Username for database connections (MySQLi).
+
+**DB_CRED_PWD**
+
+Password for database connections (MySQLi).
+
+**DB_CRED_PORT**
+
+Port for database connections (MySQLi), defaults to 3306 (standard MySQLi port).
+
 
 Responders
 ------------------
@@ -173,6 +189,27 @@ You can also use static functions:
 
 **<em>translateHttpCode($code)</em>** - returns *string* if *\$code* is of *int* type (like *'Bad Request'* for *400*) and the other way, if *string* is provided. Returns *200* or *OK* if invalid value.
 
+###Setting requirements
+
+Your module may need to have different starting requirements to be able to work properly at all, like database connection, specific HTTP method used or user authentication. For that purpose, for ease of use and to minimize the amount of code needed for each component, you can use optional module class method that checks everything for you.
+
+```PHP
+class Module extends \BModule impements \MInterface {
+	public function setRequirements() {
+		$this->_setDatabaseRequired(true);
+		$this->_setUserRequired(true);
+		$this->_setAllowedMethods(['GET', 'PUT', 'DELETE']);
+	}
+
+	public function init() {
+		return \Result::success('your-success-data');
+	}
+}
+
+In this scenario, before init function is even executed, SimpleAPI first checks whether all conditions required are met, by running setRequirements(). Should any of them fail, SimpleAPI will immediately stop execution with error code/message appropriate for the condition that failed and set HTTP status error (and headers, if necessary, like 'Allow', when used method is not the one listed in *_setAllowedMethods()* first argument).
+
+Should you need a custom error for any of those, you can ommit them in *setRequirements()* function and check them at *init()* with functionality described in **Built-in module functionality** section.
+
 Built-in module functionality
 -----------------------------
 
@@ -185,11 +222,6 @@ Sets the allowed methods for a single module. By default, all methods are allowe
 _getAllowedMethods()
 ```
 Returns an array of methods allowed by the module.
-
-```PHP
-_getUsedMethod()
-```
-Returns a method, that is currently used in the module.
 
 ```PHP
 _isMethodAllowed(string $method)

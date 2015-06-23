@@ -10,27 +10,12 @@
 		private $rUser = false;
 		private $rMethods = ['DELETE', 'GET', 'OPTIONS', 'POST', 'PUT'];
 
-		public function __construct($params) {
+		public function __construct($params, $method = null) {
 			$this->_params = $params;
-			$this->_method = $_SERVER['REQUEST_METHOD'];
+			$this->_method = is_null($method) ? $_SERVER['REQUEST_METHOD'] : $method;
 			$this->_data = $this->_parseData();
 
 			if(DB::isConnected()) $this->_db = DB::getConnection();
-		}
-
-		public function _isMethodAllowed() {
-			return in_array($this->_getUsedMethod(), $this->rMethods);
-		}
-
-		protected function _isDatabaseConnected() {
-			return DB::isConnected();
-		}
-
-		protected function _isUserSignedIn() {
-			if(is_null(Headers::get('Token'))) return false;
-			if(!$this->_isDatabaseConnected()) return false;
-
-			return true;
 		}
 
 		public function requirementsResult() {
@@ -54,24 +39,56 @@
 			return true;
 		}
 
-		public function _getModuleName() {
+		protected function _isMethodAllowed() {
+			return in_array($this->_method, $this->rMethods);
+		}
+
+		protected function _isDatabaseConnected() {
+			return DB::isConnected();
+		}
+
+		protected function _isUserSignedIn() {
+			if(defined('SEC_TOKEN_HEADER') && SEC_TOKEN_HEADER) $token = Headers::get('Token');
+			else $token = $_COOKIE['Token'];
+
+			if(!$this->_isDatabaseConnected()) return false;
+			if(is_null($token)) return false;
+
+			$userdata = $this->_getUserSession($token);
+
+			if(!$userdata) return false;
+			else return true;
+		}
+
+		protected function _getModuleName() {
 			return explode('\\', get_class($this))[1];
 		}
 
-		public function _getAllowedMethods() {
+		protected function _getAllowedMethods() {
 			return $this->rMethods;
 		}
 
-		public function _getUsedMethod() {
-			return $this->_method;
-		}
+		protected function _getUserSession($token) {
+			/* Validate SQL table/column names */
+			$token_lifetime = defined('SEC_TOKEN_LIFETIME') ? SEC_TOKEN_LIFETIME : 86400;
+			$table_sessions = defined('DB_TABLE_SESSIONS') ? DB_TABLE_SESSIONS : 'sessions';
+			$col_token = defined('DB_COL_TOKEN') ? DB_COL_TOKEN : 'token';
+			$col_created = defined('DB_COL_CREATED') ? DB_COL_CREATED : 'created';
+			$col_lastused = defined('DB_COL_LASTUSED') ? DB_COL_LASTUSED : 'last_used';
 
-		protected function _setDatabaseRequired($val) {
-			$this->rDatabase = !!$val;
-		}
+			/* Get the token */
+			$query = "SELECT * FROM $table_sessions WHERE $col_token = '$token' AND $col_created < NOW() AND $col_created + INTERVAL $token_lifetime SECOND > NOW()";
+			$q = $this->_db->query($query);
 
-		protected function _setUserRequired($val) {
-			$this->rUser = !!$val;
+			if(!$q || $q->num_rows === 0) return false;
+
+			$result = $q->fetch_assoc();
+
+			/* Token valid, update last used time */
+			$query = "UPDATE $table_sessions SET $col_lastused = NOW() WHERE id = {$result[id]}";
+			$this->_db->query($query);
+
+			return $result;
 		}
 
 		protected function _setAllowedMethods($methods) {
@@ -80,6 +97,14 @@
 			sort($methods);
 			$methods = array_unique($methods);
 			$this->rMethods = $methods;
+		}
+
+		protected function _setDatabaseRequired($val) {
+			$this->rDatabase = !!$val;
+		}
+
+		protected function _setUserRequired($val) {
+			$this->rUser = !!$val;
 		}
 
 		private function _parseData() {
@@ -95,3 +120,11 @@
 			return $data;
 		}
 	}
+
+function array_toint($arr) {
+	foreach($arr as $index => $el) {
+		if(is_numeric($el)) $arr[$index] = intval($el);
+	}
+
+	return $arr;
+}
