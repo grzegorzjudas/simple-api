@@ -59,7 +59,7 @@ Boolean, set to true (default) if you want to use token communication by using h
 
 Time in seconds of a token lifetime. After that time has passed from token creation, it will no longer be a valid token.
 
-**DB_TABLE_\*, DB_COL_\***
+**DB_TABLE_\*, DB_COL_***
 
 You can use those values to change the column names in database that will be used for certain functionality. Changing them on live server is not recommended. You can use them before SimpleAPI is installed, for it to create database with different column names to begin with.
 
@@ -217,6 +217,7 @@ class Module extends \BModule impements \MInterface {
 		return \Result::success('your-success-data');
 	}
 }
+```
 
 In this scenario, before init function is even executed, SimpleAPI first checks whether all conditions required are met, by running setRequirements(). Should any of them fail, SimpleAPI will immediately stop execution with error code/message appropriate for the condition that failed and set HTTP status error (and headers, if necessary, like 'Allow', when used method is not the one listed in *_setAllowedMethods()* first argument).
 
@@ -292,7 +293,7 @@ Provides user information (username, email) when provided with a Token.
 
 Signs user in by providing user credentials (username, password) in encrypted form (encryption used is in SEC_DATA_ENCRYPTION configuration option, i.e. of JavaScript:
 
-Authorization: 'Basic' + btoa(encrypt(username) + ':' + encrypt(password))
+Authorization: 'Basic ' + btoa(encrypt(username) + ':' + encrypt(password))
 
 When valid, this will create a token, set it as a response header or cookie and append it to userdata sent back in response. Note that Token will not be set as a header anymore for responses, but will be expected as a request header in all future calls.
 
