@@ -48,16 +48,14 @@
 		}
 
 		protected function _isUserSignedIn() {
-			if(defined('SEC_TOKEN_HEADER') && SEC_TOKEN_HEADER) $token = Headers::get('Token');
-			else $token = $_COOKIE['Token'];
+			/* Get token */
+			$token = defined('SEC_TOKEN_HEADER') && SEC_TOKEN_HEADER ? Headers::get('Token') : $_COOKIE['Token'];
 
+			/* Cannot be signed in if no db connection or empty token */
 			if(!$this->_isDatabaseConnected()) return false;
 			if(is_null($token)) return false;
 
-			$userdata = $this->_getUserSession($token);
-
-			if(!$userdata) return false;
-			else return true;
+			return !!$this->_getUserSession($token);
 		}
 
 		protected function _getModuleName() {
@@ -77,11 +75,18 @@
 			$col_lastused = defined('DB_COL_LASTUSED') ? DB_COL_LASTUSED : 'last_used';
 
 			/* Get the token */
-			$query = "SELECT * FROM $table_sessions WHERE $col_token = '$token' AND $col_created < NOW() AND $col_created + INTERVAL $token_lifetime SECOND > NOW()";
+			$query = "
+				SELECT 
+					* 
+				FROM 
+					" . DB_TABLE_SESSIONS . " 
+				WHERE 
+					" . DB_COL_TOKEN . " = '$token' 
+					AND " . DB_COL_CREATED . " < NOW() 
+					AND " . DB_COL_CREATED . " + INTERVAL " . SEC_TOKEN_LIFETIME . " SECOND > NOW()";
 			$q = $this->_db->query($query);
-
+			
 			if(!$q || $q->num_rows === 0) return false;
-
 			$result = $q->fetch_assoc();
 
 			/* Token valid, update last used time */
