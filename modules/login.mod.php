@@ -20,6 +20,7 @@
 
 		public function init() {
 			/* Proxy module for GET user/ */
-			return SimpleAPI::loadModule('user', [], 'GET');
+
+			return SimpleAPI::callModule('user', [], 'GET');
 		}
 	}

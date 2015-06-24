@@ -9,13 +9,12 @@
 		const STATE_ERROR = 'error';
 		const STATE_SUCCESS = 'success';
 
-		public static function error($message, $code, $httpStatus = null) {
+		public static function error($message, $code, $httpStatus = 'Bad Request') {
 			$response = new Response();
 
 			$response->setState(Response::STATE_ERROR);
 			$response->setError($code, $message);
-			if(!is_null($httpStatus)) $response->setHttpStatus($httpStatus);
-			else $response->setHttpStatus('Bad Request');
+			$response->setHttpStatus($httpStatus);
 
 			return $response;
 		}

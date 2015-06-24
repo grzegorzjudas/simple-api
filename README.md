@@ -98,7 +98,7 @@ Modules
 
 namespace Module\yourmodulename;
 
-use Response;
+use \Response;
 
 class Module extends \MBase implements \MInterface {
 	/* protected $_method */
@@ -120,7 +120,7 @@ All module files need to be saved in *modules/* directory with a filename of *{m
 All modules are in fact, definitions of a *Module* class, but in different *namespace*. This namespace needs to be provided first, in order for the module to load correctly.
 The module itself needs to implement default module interface *\MInterface*, and can, but is not required to, inherit from *\MBase*, which is a default module class.
 
-> *\MBase* object provides most of the API functionality that can be used in modules, along with providing it with HTTP method used, URL parameters and a list of usability functions.
+> *\MBase* object provides most of the API functionality that can be used in modules, along with providing it with HTTP method used, URL parameters and a set of usable functions.
 > 
 > If not used, *Module* object properties, shown above, will not exist.
 

@@ -110,6 +110,16 @@
 			return $result;
 		}
 
+		protected function _getTemplate($name, $vars) {
+			$tpl = file_get_contents('templates/' . $name . '.html');
+
+			foreach ($vars as $key => $var) {
+				$tpl = str_replace('{{' . $key . '}}', $var, $tpl);
+			}
+
+			return $tpl;
+		}
+
 		protected function _setAllowedMethods($methods) {
 			if(gettype($methods) === 'string') $methods = [ $methods ];
 

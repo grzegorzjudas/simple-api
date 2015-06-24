@@ -14,10 +14,10 @@
 
 		public function setRequirements() {
 			/* DEVELOPMENT */
-			// $this->_method = "PUT";
-			// $this->_data[DB_COL_USER] = "user00";
+			// $this->_method = "POST";
+			// $this->_data[DB_COL_USER] = "user01";
 			// $this->_data[DB_COL_PWD] = hash(SEC_DATA_ENCRYPTION, "tajemnehaslo");
-			// $this->_data[DB_COL_EMAIL] = "user00@simpleapi.com";
+			// $this->_data[DB_COL_EMAIL] = "user01@simpleapi.com";
 
 			/* user1 */
 			// $_SERVER['PHP_AUTH_USER'] = 'b4275b899e66e4961338099e2ff0a4065c07d30ccc3f7ad44d8cee6b197be24453463b68ad5d364b71b4f4bfc0650fe3fd25dada71557bb6f4050bb433e46c50';
@@ -39,7 +39,7 @@
 				case "PUT": return $this->signUser();
 			}
 
-			return Response::error(Lang::get('module-invalid-method'), 'module-invalid-method', 405);
+			return Response::error(Lang::get('module-invalid-method'), 'module-invalid-method', 'Method Not Allowed');
 		}
 
 		public function getUser() {
@@ -48,8 +48,8 @@
 
 			/* Token error */
 			if(!$this->_isUserSignedIn()) {
-				if(is_null($token)) return Response::error(Lang::get('user-not-signedin'), 'user-not-signedin', 401);
-				else return Response::error(Lang::get('user-invalid-token'), 'user-invalid-token', 401);
+				if(is_null($token)) return Response::error(Lang::get('user-not-signedin'), 'user-not-signedin', 'Unauthorized');
+				else return Response::error(Lang::get('user-invalid-token'), 'user-invalid-token', 'Unauthorized');
 			}
 
 			/* Fetch user data */
@@ -101,7 +101,34 @@
 				return Response::error(Lang::get('user-not-unique'), 'user-not-unique');
 			}
 
-			$query = "INSERT INTO " . DB_TABLE_USERS . " VALUES(null, '{$u[DB_COL_LOGIN]}', '{$u[DB_COL_USER]}', '{$u[DB_COL_PWD]}', '{$u[DB_COL_EMAIL]}')";
+			/* Send confirmation e-mail, if required */
+			if(SEC_EMAIL_CONFIRM) {
+				$vars = [
+					'TPL_USERNAME' => $u[DB_COL_USER],
+					'TPL_APPNAME' => SYSTEM_APP_NAME,
+					'TPL_ACTURL' => SYSTEM_APP_URL . 'user/activate/' . $u[DB_COL_LOGIN] . '/'
+				];
+				$tpl = $this->_getTemplate('mail_register', $vars);
+
+				$headers = "";
+				$headers .= "From: " . SYSTEM_APP_REGMAIL . "\n";
+				$headers .= "MIME-Version: 1.0\n";
+				$headers .= "Content-Type: text/html; charset=" . SYSTEM_CHARSET_DEFAULT . "";
+
+				mail($u[DB_COL_EMAIL], Lang::get('user-register-mailtopic'), $tpl, $headers);
+			}
+
+			$isActive = !SEC_EMAIL_CONFIRM ? 1 : 0;
+			$date = time();
+
+			$query = "INSERT INTO " . DB_TABLE_USERS . " VALUES(
+				null, 
+				'{$u[DB_COL_LOGIN]}', 
+				'{$u[DB_COL_USER]}', 
+				'{$u[DB_COL_PWD]}', 
+				'{$u[DB_COL_EMAIL]}', 
+				FROM_UNIXTIME('$date'), 
+				$isActive)";
 			$q = $this->_db->query($query);
 
 			return Response::success(null, 201);

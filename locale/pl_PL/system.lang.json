@@ -14,5 +14,6 @@
 	"user-invalid-name": "Nazwa użytkownika jest za krótka.",
 	"user-invalid-pwd": "Hasło jest za krótkie.",
 	"user-no-requirements": "Nie wszystkie wymagane pola zostały podane.",
+	"user-register-mailtopic": "Witamy w systemie SimpleAPI!",
 	"db-not-connected": "Brak połączenia z bazą danych."
 }

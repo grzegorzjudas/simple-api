@@ -1,4 +1,13 @@
 <?php
+	/* Your application name */
+	define("SYSTEM_APP_NAME", "SimpleAPI Development Application");
+
+	/* Server full URL with slash appended */
+	define("SYSTEM_APP_URL", "http://localhost:8888/");
+
+	define("SYSTEM_APP_ADMINMAIL", "admin@darkrepulser.dev");
+
+	define("SYSTEM_APP_REGMAIL", "no-reply@darkrepulser.dev");
 
 	/* Default response type: used when no requested type found and the request allows any other MIME type */
 	define("SYSTEM_RESPONSE_DEFAULT", "application/json");
@@ -28,7 +37,7 @@
 	define("SEC_PWD_MINLEN", 6);
 
 	/* Whether e-mail confirmation when registering is required */
-	define("SEC_EMAIL_CONFIRM", false);
+	define("SEC_EMAIL_CONFIRM", true);
 
 	/* Allow accounts to share e-mail address */
 	define("SEC_EMAIL_UNIQUE", true);

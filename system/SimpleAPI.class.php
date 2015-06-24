@@ -53,6 +53,12 @@
 
 			$module = new $moduleName($params, $method);
 
+			return $module;
+		}
+
+		public static function callModule($name, $params = [], $method = 'GET') {
+			$module = SimpleAPI::loadModule($name, $params, $method);
+			
 			/* Check module requirements first */
 			if(method_exists($module, 'setRequirements')) {
 				$module->setRequirements();
@@ -92,7 +98,7 @@
 			}
 
 			if(!is_null($moduleName)) {
-				$result = SimpleAPI::loadModule($moduleName, array_splice($this->_url, 1), 'GET');
+				$result = SimpleAPI::callModule($moduleName, array_splice($this->_url, 1), 'GET');
 			}
 			else {
 				$result = Response::error(Lang::get('module-not-provided'), 'module-not-provided', 400);
