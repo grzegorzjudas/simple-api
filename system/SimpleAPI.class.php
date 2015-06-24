@@ -58,7 +58,7 @@
 
 		public static function callModule($name, $params = [], $method = 'GET') {
 			$module = SimpleAPI::loadModule($name, $params, $method);
-			
+
 			/* Check module requirements first */
 			if(method_exists($module, 'setRequirements')) {
 				$module->setRequirements();

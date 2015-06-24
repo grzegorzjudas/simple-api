@@ -8,6 +8,7 @@
 	"module-no-requirements": "Nie spełniono wymagań modułu.",
 	"user-not-signedin": "Brak dostępu. Nie zalogowano, nieprawidłowe dane użytkownika lub token.",
 	"user-not-unique": "Użytkownik z podanym loginem lub adresem e-mail już istnieje.",
+	"user-not-inactive": "Konto zostało już aktywowane.",
 	"user-no-data": "Wymagane jest podanie użytkownika i hasła.",
 	"user-invalid-token": "Token wygasł lub jest niepoprawny.",
 	"user-invalid-email": "Podaj poprawny adres e-mail.",

@@ -12,21 +12,7 @@
 		/* protected $_params */
 		/* protected $_data */
 
-		public function setRequirements() {
-			/* DEVELOPMENT */
-			// $this->_method = "POST";
-			// $this->_data[DB_COL_USER] = "user01";
-			// $this->_data[DB_COL_PWD] = hash(SEC_DATA_ENCRYPTION, "tajemnehaslo");
-			// $this->_data[DB_COL_EMAIL] = "user01@simpleapi.com";
-
-			/* user1 */
-			// $_SERVER['PHP_AUTH_USER'] = 'b4275b899e66e4961338099e2ff0a4065c07d30ccc3f7ad44d8cee6b197be24453463b68ad5d364b71b4f4bfc0650fe3fd25dada71557bb6f4050bb433e46c50';
-			// $_SERVER['PHP_AUTH_PW'] = 'b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86';
-			
-			/* user2 */
-			// $_SERVER['PHP_AUTH_USER'] = '887ad6a742d43ad98d149b3c7f3de605c9bdf43dc148e4519cbfa021833bdba78d2a19eaf7dbd4158447651ee7f75dbcbc1f3a3199137c77f6af066216161397';
-			// $_SERVER['PHP_AUTH_PW'] = '48c8ff36caedd22d610d034e8a3ea1b0e8a79d8e046c76a197d452b2689322ccc53350a67682e976e8cdadd8d3fd892beb3e64fddef3418ed11a9bec7ea1cef3';
-			
+		public function setRequirements() {			
 			$this->_setDatabaseRequired(true);
 			$this->_setAllowedMethods(['GET', 'POST', 'PUT']);
 		}
@@ -34,15 +20,15 @@
 		public function init() {
 
 			switch($this->_method) {
-				case "GET": return $this->getUser();
-				case "POST": return $this->createUser();
-				case "PUT": return $this->signUser();
+				case "GET": return $this->get();
+				case "POST": return $this->create();
+				case "PUT": return $this->signIn();
 			}
 
 			return Response::error(Lang::get('module-invalid-method'), 'module-invalid-method', 'Method Not Allowed');
 		}
 
-		public function getUser() {
+		public function get() {
 			/* Get token */
 			$token = defined('SEC_TOKEN_HEADER') && SEC_TOKEN_HEADER ? Headers::get('Token') : $_COOKIE['Token'];
 
@@ -66,7 +52,7 @@
 			];
 		}
 
-		public function createUser() {
+		public function create() {
 			$this->_setFieldsRequired([DB_COL_USER, DB_COL_PWD, DB_COL_EMAIL]);
 
 			/* Not all required fields available */
@@ -106,7 +92,7 @@
 				$vars = [
 					'TPL_USERNAME' => $u[DB_COL_USER],
 					'TPL_APPNAME' => SYSTEM_APP_NAME,
-					'TPL_ACTURL' => SYSTEM_APP_URL . 'user/activate/' . $u[DB_COL_LOGIN] . '/'
+					'TPL_ACTURL' => SYSTEM_APP_URL . 'activate/' . $u[DB_COL_LOGIN] . '/'
 				];
 				$tpl = $this->_getTemplate('mail_register', $vars);
 
@@ -127,6 +113,7 @@
 				'{$u[DB_COL_USER]}', 
 				'{$u[DB_COL_PWD]}', 
 				'{$u[DB_COL_EMAIL]}', 
+				0, 
 				FROM_UNIXTIME('$date'), 
 				$isActive)";
 			$q = $this->_db->query($query);
@@ -134,7 +121,25 @@
 			return Response::success(null, 201);
 		}
 
-		public function signUser() {
+		public function isActivated($login) {
+			$query = "SELECT " . DB_COL_ACTIVATED . " FROM " . DB_TABLE_USERS . " WHERE " . DB_COL_LOGIN . " = '" . $login . "'";
+			$q = $this->_db->query($query);
+
+			return $q->fetch_assoc()[DB_COL_ACTIVATED];
+		}
+
+		public function activate($login) {
+			if($this->isActivated($login)) {
+				return Response::error(Lang::get('user-not-inactive'), 'user-not-inactive');
+			}
+
+			$query = "UPDATE " . DB_TABLE_USERS . " SET " . DB_COL_ACTIVATED . " = 1 WHERE " . DB_COL_LOGIN . " = '" . $login . "'";
+			$q = $this->_db->query($query);
+
+			return Response::success(null);
+		}
+
+		public function signIn() {
 			/* If already signed in, proxy to /GET */
 			if($this->_isUserSignedIn()) return $this->getUser();
 

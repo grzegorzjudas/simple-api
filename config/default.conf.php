@@ -2,12 +2,14 @@
 	/* Your application name */
 	define("SYSTEM_APP_NAME", "SimpleAPI Development Application");
 
-	/* Server full URL with slash appended */
-	define("SYSTEM_APP_URL", "http://localhost:8888/");
+	/* Client app full URL with slash appended */
+	define("SYSTEM_APP_URL", "http://localhost/");
 
-	define("SYSTEM_APP_ADMINMAIL", "admin@darkrepulser.dev");
+	/* Server admin E-mail address */
+	define("SYSTEM_APP_ADMINMAIL", "admin@simpleapi.com");
 
-	define("SYSTEM_APP_REGMAIL", "no-reply@darkrepulser.dev");
+	/* E-mail address used for mails sent by SimpleAPI */
+	define("SYSTEM_APP_REGMAIL", "no-reply@simpleapi.com");
 
 	/* Default response type: used when no requested type found and the request allows any other MIME type */
 	define("SYSTEM_RESPONSE_DEFAULT", "application/json");
@@ -61,6 +63,7 @@
 	define("DB_COL_LOGIN", "login");
 	define("DB_COL_PWD", "password");
 	define("DB_COL_EMAIL", "email");
+	define("DB_COL_ACTIVATED", "activated");
 	define("DB_COL_TOKEN", "token");
 	define("DB_COL_CREATED", "created");
 	define("DB_COL_LASTUSED", "last_used");

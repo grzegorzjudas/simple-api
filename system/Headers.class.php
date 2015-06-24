@@ -7,12 +7,6 @@
 
 		public static function load() {
 			Headers::$data = Headers::parseHeaders(getallheaders());
-
-			/* DEVELOPMENT */
-			array_unshift(Headers::$data['Accept'], 'application/json');
-
-			/* user2 */
-			// Headers::$data['Token'] = '14165866f4927e883b3b1577f5e47b36b724eb482efc8eabe97e67d6d8c1fef02533e1fdc2f745f4c3db804c736d5391421923ab8d106751190fe493d3d5a52f';
 		}
 
 		public static function get($name) {
