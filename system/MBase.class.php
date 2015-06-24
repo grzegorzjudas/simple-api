@@ -22,24 +22,24 @@
 		public function requirementsResult() {
 			/* Check database connection */
 			if($this->rDatabase && !$this->_isDatabaseConnected()) {
-				return Response::error(Lang::get('db-not-connected'), 'db-not-connected', 500);
+				return Response::error('db-not-connected', 500);
 			}
 
 			/* Check whether user is signed in */
 			if($this->rUser && !$this->_isUserSignedIn()) {
-				return Response::error(Lang::get('user-not-signedin'), 'user-not-signedin', 401);
+				return Response::error('user-not-signedin', 401);
 			}
 
 			/* Check if module allows HTTP method used */
 			if(!$this->_isMethodAllowed()) {
 				Headers::set('Allow', $this->_getAllowedMethods());
 
-				return Response::error(Lang::get('module-invalid-method'), 'system-invalid-method', 405);
+				return Response::error('system-invalid-method', 405);
 			}
 
 			/* Check if all fields are present */
 			if(!$this->_requiredFieldsPresent()) {
-				return Response::error(Lang::get('module-no-requirements'), 'module-no-requirements');
+				return Response::error('module-no-requirements');
 			}
 
 			return true;
@@ -55,7 +55,7 @@
 
 		protected function _isUserSignedIn() {
 			/* Get token */
-			$token = defined('SEC_TOKEN_HEADER') && SEC_TOKEN_HEADER ? Headers::get('Token') : $_COOKIE['Token'];
+			$token = SEC_TOKEN_HEADER ? Headers::get('Token') : $_COOKIE['Token'];
 
 			/* Cannot be signed in if no db connection or empty token */
 			if(!$this->_isDatabaseConnected()) return false;
@@ -80,7 +80,7 @@
 			return $this->rMethods;
 		}
 
-		protected function _getUserSession($token) {
+		protected function _getUserSession($token, $allowExpired = false) {
 			/* Validate SQL table/column names */
 			$token_lifetime = defined('SEC_TOKEN_LIFETIME') ? SEC_TOKEN_LIFETIME : 86400;
 			$table_sessions = defined('DB_TABLE_SESSIONS') ? DB_TABLE_SESSIONS : 'sessions';
@@ -89,15 +89,11 @@
 			$col_lastused = defined('DB_COL_LASTUSED') ? DB_COL_LASTUSED : 'last_used';
 
 			/* Get the token */
-			$query = "
-				SELECT 
-					* 
-				FROM 
-					" . DB_TABLE_SESSIONS . " 
-				WHERE 
-					" . DB_COL_TOKEN . " = '$token' 
-					AND " . DB_COL_CREATED . " < NOW() 
-					AND " . DB_COL_CREATED . " + INTERVAL " . SEC_TOKEN_LIFETIME . " SECOND > NOW()";
+			$query = "SELECT * FROM " . DB_TABLE_SESSIONS . " WHERE " . DB_COL_TOKEN . " = '" . $token . "'";
+
+			if(!$allowExpired) {
+				$query .= " AND " . DB_COL_CREATED . " < NOW() AND " . DB_COL_CREATED . " + INTERVAL " . SEC_TOKEN_LIFETIME . " SECOND > NOW()";
+			}
 			$q = $this->_db->query($query);
 			
 			if(!$q || $q->num_rows === 0) return false;
@@ -118,6 +114,14 @@
 			}
 
 			return $tpl;
+		}
+
+		protected function _getMissingField() {
+			foreach($this->rFields as $fieldKey) {
+				if(is_null($this->_data[$fieldKey])) return $fieldKey;
+			}
+
+			return '';
 		}
 
 		protected function _setAllowedMethods($methods) {

@@ -18,24 +18,33 @@
 		}
 
 		public function init() {
+			/* Development */
+			// $this->_method = "POST";
+			// $this->_data['username'] = 'username04';
+			// $this->_data['password'] = 'abcbac';
+			// $this->_data['email'] = 'username01a@a.a';
 
 			switch($this->_method) {
 				case "GET": return $this->get();
 				case "POST": return $this->create();
 				case "PUT": return $this->signIn();
+				default: return Response::error('module-invalid-method', 'Method Not Allowed');
 			}
-
-			return Response::error(Lang::get('module-invalid-method'), 'module-invalid-method', 'Method Not Allowed');
 		}
 
-		public function get() {
+		public function get($token = null) {
 			/* Get token */
-			$token = defined('SEC_TOKEN_HEADER') && SEC_TOKEN_HEADER ? Headers::get('Token') : $_COOKIE['Token'];
+			if(is_null($token)) {
+				$token = SEC_TOKEN_HEADER ? Headers::get('Token') : $_COOKIE['Token'];
+			}
 
 			/* Token error */
 			if(!$this->_isUserSignedIn()) {
-				if(is_null($token)) return Response::error(Lang::get('user-not-signedin'), 'user-not-signedin', 'Unauthorized');
-				else return Response::error(Lang::get('user-invalid-token'), 'user-invalid-token', 'Unauthorized');
+				if(is_null($token)) return Response::error('user-not-signedin');
+				else {
+					if(!$this->_getUserSession($token, true)) return Response::error('user-invalid-token');
+					else return Response::error('user-expired-token');
+				}
 			}
 
 			/* Fetch user data */
@@ -57,22 +66,22 @@
 
 			/* Not all required fields available */
 			if(!$this->_requiredFieldsPresent()) {
-				return Response::error(Lang::get('user-no-requirements'), 'user-no-requirements');
+				return Response::verror('user-no-field', ['FNAME' => $this->_getMissingField()]);
 			}
 
 			/* Invalid username */
 			if(strlen($this->_data[DB_COL_USER]) < SEC_USER_MINLEN) {
-				return Response::error(Lang::get('user-invalid-name'), 'user-invalid-name');
+				return Response::verror('user-invalid-namelen', ['NLEN' => SEC_USER_MINLEN]);
 			}
 
 			/* Invalid password */
 			if(strlen($this->_data[DB_COL_PWD]) < SEC_PWD_MINLEN) {
-				return Response::error(Lang::get('user-invalid-pwd'), 'user-invalid-pwd');
+				return Response::verror('user-invalid-pwdlen', ['PLEN' => SEC_PWD_MINLEN]);
 			}
 
 			/* Invalid e-mail */
 			if(!filter_var($this->_data[DB_COL_EMAIL], FILTER_VALIDATE_EMAIL)) {
-				return Response::error(Lang::get('user-invalid-email'), 'user-invalid-email');
+				return Response::error('user-invalid-email');
 			}
 
 			$u = $this->_data;
@@ -84,7 +93,8 @@
 			$q = $this->_db->query($query);
 
 			if($q->num_rows > 0) {
-				return Response::error(Lang::get('user-not-unique'), 'user-not-unique');
+				if(SEC_EMAIL_UNIQUE) return Response::error('user-not-elunique');
+				else return Response::error('user-not-lunique');
 			}
 
 			/* Send confirmation e-mail, if required */
@@ -130,7 +140,7 @@
 
 		public function activate($login) {
 			if($this->isActivated($login)) {
-				return Response::error(Lang::get('user-not-inactive'), 'user-not-inactive');
+				return Response::error('user-not-inactive');
 			}
 
 			$query = "UPDATE " . DB_TABLE_USERS . " SET " . DB_COL_ACTIVATED . " = 1 WHERE " . DB_COL_LOGIN . " = '" . $login . "'";
@@ -145,7 +155,7 @@
 
 			/* Check if authorization data exists */
 			if(!$_SERVER['PHP_AUTH_USER'] || !$_SERVER['PHP_AUTH_PW']) {
-				return Response::error(Lang::get('user-no-data'), 'user-no-data', 400);
+				return Response::error('user-no-data');
 			}
 
 			/* Find the user with specified login */

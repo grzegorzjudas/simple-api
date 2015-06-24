@@ -9,12 +9,48 @@
 		const STATE_ERROR = 'error';
 		const STATE_SUCCESS = 'success';
 
-		public static function error($message, $code, $httpStatus = 'Bad Request') {
-			$response = new Response();
+		public static function error($code, $httpStatus = 400) {
+			if(SYSTEM_ALLOW_MULTIERRORS) {
+				if(gettype($code) === 'string') $code = [ $code ];
 
+				$msg = [];
+				foreach($code as $c) {
+					$msg[] = Lang::get($c);
+				}
+			}
+			else {
+				$msg = Lang::get($code);
+			}
+
+			$response = new Response();
 			$response->setState(Response::STATE_ERROR);
-			$response->setError($code, $message);
 			$response->setHttpStatus($httpStatus);
+			$response->setError($code, $msg);
+
+			return $response;
+		}
+
+		public static function verror($code, $vars, $httpStatus = 400) {
+			if(SYSTEM_ALLOW_MULTIERRORS) {
+				if(gettype($code) === 'string') $code = [ $code ];
+
+				$msg = [];
+				foreach($code as $c) {
+					$m = Lang::get($c);
+
+					foreach($vars as $key => $var) $m = str_replace('{{' . $key . '}}', $var, $m);
+					$msg[] = $m;
+				}
+			}
+			else {
+				$msg = Lang::get($code);
+				foreach($vars as $key => $var) $msg = str_replace('{{' . $key . '}}', $var, $msg);
+			}
+
+			$response = new Response();
+			$response->setState(Response::STATE_ERROR);
+			$response->setHttpStatus($httpStatus);
+			$response->setError($code, $msg);
 
 			return $response;
 		}

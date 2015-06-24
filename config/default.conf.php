@@ -26,11 +26,13 @@
 	/* Enable or disable Cross Origin requests */
 	define("SYSTEM_ALLOW_CROSSORIGIN", false); //unused
 
+	define("SYSTEM_ALLOW_MULTIERRORS", false);
+
 	/* Use HTTP Authentication with token passed in HTTP Header */
 	define("SEC_TOKEN_HEADER", true);
 
 	/* Token lifetime in seconds */
-	define("SEC_TOKEN_LIFETIME", 86400);
+	define("SEC_TOKEN_LIFETIME", 86400 * 2);
 
 	/* Minimum username length requirement */
 	define("SEC_USER_MINLEN", 6);

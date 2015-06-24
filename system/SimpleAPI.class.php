@@ -29,25 +29,25 @@
 			/* If module already loaded, prevent recursive calling */
 			if(class_exists($moduleName)) {
 				if(array_search($moduleName, array_column(debug_backtrace(), 'class')) !== false) {
-					return Response::error(Lang::get('module-cannot-callback'), 'module-cannot-callback', 500);
+					return Response::error('module-cannot-callback', 500);
 				}
 			}
 			else {
 				/* File not found */
 				if(!file_exists('modules/' . $name . '.mod.php')) {
-					return Response::error(Lang::get('module-not-found'), 'module-not-found', 404);
+					return Response::error('module-not-found', 404);
 				}
 
 				include 'modules/' . $name . '.mod.php';
 
 				/* No appropriate module definition in the file */
 				if(!class_exists($moduleName)) {
-					return Response::error(Lang::get('module-no-module'), 'module-no-module', 500);
+					return Response::error('module-no-module', 500);
 				}
 
 				/* Invalid module, does not implement basic interface */
 				if(!in_array('MInterface', class_implements($moduleName))) {
-					return Response::error(Lang::get('module-invalid-declaration'), 'module-invalid-declaration', 500);
+					return Response::error('module-invalid-declaration', 500);
 				}
 			}
 
@@ -65,7 +65,7 @@
 				$requirementsPassed = $module->requirementsResult();
 
 				if(!$requirementsPassed) {
-					return Response::error(Lang::get('module-no-requirements'), 'module-no-requirements');
+					return Response::error('module-no-requirements');
 				}
 
 				if($requirementsPassed instanceof Response && $requirementsPassed->getState() === Response::STATE_ERROR) {
@@ -101,7 +101,7 @@
 				$result = SimpleAPI::callModule($moduleName, array_splice($this->_url, 1), 'GET');
 			}
 			else {
-				$result = Response::error(Lang::get('module-not-provided'), 'module-not-provided', 400);
+				$result = Response::error('module-not-provided');
 			}			
 
 			$response = [];
