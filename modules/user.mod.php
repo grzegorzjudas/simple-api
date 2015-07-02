@@ -33,6 +33,7 @@
 			$inst->setColumn('test_sessions', 'created', 'DATETIME NOT NULL', 'SESSIONS_CREATED');
 			$inst->setColumn('test_sessions', 'last_used', 'DATETIME NOT NULL', 'SESSIONS_LASTUSED');
 			$inst->setColumn('test_sessions', 'ip', 'VARCHAR(15)', 'SESSIONS_IP');
+			$inst->setIndex('test_sessions', 'users_id');
 
 			return $inst;
 		}

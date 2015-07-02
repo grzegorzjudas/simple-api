@@ -60,17 +60,27 @@
 							$query = "ALTER TABLE " . $table . " ADD " . $column . " " . $params;
 							$q = $this->_db->query($query);
 						}
+
+						if(in_array($column, $script->indexes[$table])) {
+							$query = "ALTER TABLE " . $table . " ADD INDEX (" . $column . ")";
+							$q = $this->_db->query($query);
+						}
 					}
 				}
 				else {
 					$query = "CREATE TABLE " . $table . " (" . PHP_EOL;
 
+					/* Columns */
 					foreach($columns as $column => $params) {
 						$query .= $column . " " . $params . ", ";
 					}
 
+					/* Indexes */
+					foreach ($script->indexes[$table] as $column) {
+						$query .= "INDEX (" . $column . "), ";
+					}
+
 					$query = substr($query, 0, -2) . ")";
-					// echo $query;
 					$q = $this->_db->query($query);	
 
 					// print_r($q);

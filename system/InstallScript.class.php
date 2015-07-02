@@ -2,6 +2,7 @@
 
 	class InstallScript {
 		public $data = [];
+		public $indexes = [];
 		private $labels = [];
 		// private $columnNameTaken;
 
@@ -11,6 +12,7 @@
 			if(!isset($this->data[$name])) {
 				$this->data[$name] = [];
 				$this->labels[$name] = [];
+				$this->indexes[$name] = [];
 			}
 		}
 
@@ -20,6 +22,10 @@
 
 			$this->data[$table][$name] = $params;
 			$this->labels[$table][$name] = $label;
+		}
+
+		public function setIndex($table, $column) {
+			$this->indexes[$table][] = $column;
 		}
 
 		public function generateConfigFile($moduleName) {
