@@ -18,22 +18,16 @@
 		}
 
 		public function init() {
-			/* Development */
-			// $this->_method = "POST";
-			// $this->_data['username'] = 'username04';
-			// $this->_data['password'] = 'abcbac';
-			// $this->_data['email'] = 'username01a@a.a';
-
 			switch($this->_method) {
-				case "GET": return $this->get();
+				case "GET": return $this->getFromToken();
 				case "POST": return $this->create();
 				case "PUT": return $this->signIn();
 				default: return Response::error('module-invalid-method', 'Method Not Allowed');
 			}
 		}
 
-		public function get($token = null) {
-			/* Get token */
+		public function getFromToken($token = null) {
+			/* Get token if not provided */
 			if(is_null($token)) {
 				$token = SEC_TOKEN_HEADER ? Headers::get('Token') : $_COOKIE['Token'];
 			}
@@ -49,16 +43,20 @@
 
 			/* Fetch user data */
 			$userid = $this->_getUserSession($token)[DB_TABLE_USERS . '_id'];
-			$query = "SELECT username, email FROM " . DB_TABLE_USERS . " WHERE id = '" . $userid . "'";
+			$query = "SELECT * FROM " . DB_TABLE_USERS . " WHERE id = '" . $userid . "'";
 
 			$q = $this->_db->query($query);
 			$result = $q->fetch_assoc();
 
 			/* Filter final object */
-			return [
-				'username' => $result['username'],
-				'email' => $result['email']
-			];
+			return array_toint($result);
+		}
+
+		public function getByParam($param, $value) {
+			$query = "SELECT * FROM " . DB_TABLE_USERS . " WHERE " . $param . " = '" . $value . "'";
+			$q = $this->_db->query($query);
+
+			return array_toint($q->fetch_assoc());
 		}
 
 		public function create() {

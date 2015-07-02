@@ -59,6 +59,10 @@
 		public static function callModule($name, $params = [], $method = 'GET') {
 			$module = SimpleAPI::loadModule($name, $params, $method);
 
+			if($module instanceof Response && $module->getState() === Response::STATE_ERROR) {
+				return $module;
+			}
+
 			/* Check module requirements first */
 			if(method_exists($module, 'setRequirements')) {
 				$module->setRequirements();

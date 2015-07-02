@@ -159,6 +159,8 @@
 	}
 
 function array_toint($arr) {
+	if(gettype($arr) !== 'array') return $arr;
+
 	foreach($arr as $index => $el) {
 		if(is_numeric($el)) $arr[$index] = intval($el);
 	}
