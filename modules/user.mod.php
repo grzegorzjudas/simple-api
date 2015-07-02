@@ -34,6 +34,7 @@
 			$inst->setColumn('test_sessions', 'last_used', 'DATETIME NOT NULL', 'SESSIONS_LASTUSED');
 			$inst->setColumn('test_sessions', 'ip', 'VARCHAR(15)', 'SESSIONS_IP');
 			$inst->setIndex('test_sessions', 'users_id');
+			$inst->setRelation('test_sessions.users_id', 'test_users.id');
 
 			return $inst;
 		}

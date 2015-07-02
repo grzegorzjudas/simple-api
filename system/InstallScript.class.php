@@ -3,6 +3,7 @@
 	class InstallScript {
 		public $data = [];
 		public $indexes = [];
+		public $relations = [];
 		private $labels = [];
 		// private $columnNameTaken;
 
@@ -13,6 +14,7 @@
 				$this->data[$name] = [];
 				$this->labels[$name] = [];
 				$this->indexes[$name] = [];
+				$this->relations[$name] = [];
 			}
 		}
 
@@ -26,6 +28,20 @@
 
 		public function setIndex($table, $column) {
 			$this->indexes[$table][] = $column;
+		}
+
+		public function setRelation($source, $target, $onDelete = 'RESTRICT', $onUpdate = 'RESTRICT') {
+			$sourceTable = explode('.', $source)[0];
+			$sourceColumn = explode('.', $source)[1];
+			$targetTable = explode('.', $target)[0];
+			$targetColumn = explode('.', $target)[1];
+
+			$this->relations[$sourceTable][$sourceColumn] = [
+				'table' => $targetTable,
+				'column' => $targetColumn,
+				'ondelete' => $onDelete,
+				'onupdate' => $onUpdate
+			];
 		}
 
 		public function generateConfigFile($moduleName) {

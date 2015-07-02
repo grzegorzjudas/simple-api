@@ -45,6 +45,7 @@
 				$query = "SELECT * FROM information_schema.tables WHERE table_schema = '" . DB_CRED_DBNAME . "' AND table_name = '" . $table . "'";
 				$q = $this->_db->query($query);
 
+				/* Table already exists */
 				if($q->num_rows > 0) {
 					foreach ($columns as $column => $params) {
 						/* Check column existance */
@@ -67,6 +68,7 @@
 						}
 					}
 				}
+				/* Table needs to be created */
 				else {
 					$query = "CREATE TABLE " . $table . " (" . PHP_EOL;
 
@@ -81,7 +83,22 @@
 					}
 
 					$query = substr($query, 0, -2) . ")";
-					$q = $this->_db->query($query);	
+					$q = $this->_db->query($query);
+
+					/* Relations */
+					foreach($columns as $column => $params) {
+						if(isset($script->relations[$table][$column])) {
+							$rel = $script->relations[$table][$column];
+							$query = "ALTER TABLE " . $table . " ADD 
+								FOREIGN KEY (" . $column . ") 
+								REFERENCES " . DB_CRED_DBNAME . "." . $rel['table'] . " (" . $rel['column'] . ") 
+								ON DELETE " . $rel['ondelete'] . " 
+								ON UPDATE " . $rel['onupdate'];
+
+							echo $query;
+							$q = $this->_db->query($query);
+						}
+					}
 
 					// print_r($q);
 				}
