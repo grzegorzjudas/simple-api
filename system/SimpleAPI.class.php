@@ -5,6 +5,7 @@
 	require 'system/Lang.class.php';
 	require 'system/DB.class.php';
 	require 'system/Responders.class.php';
+	require 'system/InstallScript.class.php';
 	require 'system/MBase.class.php';
 	require 'system/MInterface.int.php';
 
