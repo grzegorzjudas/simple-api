@@ -5,7 +5,6 @@
 		public $indexes = [];
 		public $relations = [];
 		private $labels = [];
-		// private $columnNameTaken;
 
 		public function __construct() { }
 

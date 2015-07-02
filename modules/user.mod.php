@@ -16,25 +16,25 @@
 		public function install() {
 			$inst = new InstallScript();
 
-			$inst->setTable('test_users');
-			$inst->setColumn('test_users', 'id', 'INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY', 'USERS_ID');
-			$inst->setColumn('test_users', 'login', 'VARCHAR(128) NOT NULL', 'USERS_LOGIN');
-			$inst->setColumn('test_users', 'username', 'VARCHAR(128) NOT NULL', 'USERS_USERNAME');
-			$inst->setColumn('test_users', 'password', 'VARCHAR(128) NOT NULL', 'USERS_PWD');
-			$inst->setColumn('test_users', 'email', 'VARCHAR(128) NOT NULL', 'USERS_EMAIL');
-			$inst->setColumn('test_users', 'access_level', 'TINYINT(1) NOT NULL', 'USERS_ALEVEL');
-			$inst->setColumn('test_users', 'created', 'DATETIME NOT NULL', 'USERS_CREATED');
-			$inst->setColumn('test_users', 'activated', 'TINYINT(1) NOT NULL', 'USERS_ACTIVATED');
+			$inst->setTable('users');
+			$inst->setColumn('users', 'id', 'INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY', 'USERS_ID');
+			$inst->setColumn('users', 'login', 'VARCHAR(128) NOT NULL', 'USERS_LOGIN');
+			$inst->setColumn('users', 'username', 'VARCHAR(128) NOT NULL', 'USERS_USERNAME');
+			$inst->setColumn('users', 'password', 'VARCHAR(128) NOT NULL', 'USERS_PWD');
+			$inst->setColumn('users', 'email', 'VARCHAR(128) NOT NULL', 'USERS_EMAIL');
+			$inst->setColumn('users', 'access_level', 'TINYINT(1) NOT NULL', 'USERS_ALEVEL');
+			$inst->setColumn('users', 'created', 'DATETIME NOT NULL', 'USERS_CREATED');
+			$inst->setColumn('users', 'activated', 'TINYINT(1) NOT NULL', 'USERS_ACTIVATED');
 
-			$inst->setTable('test_sessions');
-			$inst->setColumn('test_sessions', 'id', 'INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY', 'SESSIONS_ID');
-			$inst->setColumn('test_sessions', 'users_id', 'INT(11) UNSIGNED', 'SESSIONS_USERID');
-			$inst->setColumn('test_sessions', 'token', 'VARCHAR(128) NOT NULL', 'SESSIONS_TOKEN');
-			$inst->setColumn('test_sessions', 'created', 'DATETIME NOT NULL', 'SESSIONS_CREATED');
-			$inst->setColumn('test_sessions', 'last_used', 'DATETIME NOT NULL', 'SESSIONS_LASTUSED');
-			$inst->setColumn('test_sessions', 'ip', 'VARCHAR(15)', 'SESSIONS_IP');
-			$inst->setIndex('test_sessions', 'users_id');
-			$inst->setRelation('test_sessions.users_id', 'test_users.id');
+			$inst->setTable('sessions');
+			$inst->setColumn('sessions', 'id', 'INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY', 'SESSIONS_ID');
+			$inst->setColumn('sessions', 'users_id', 'INT(11) UNSIGNED', 'SESSIONS_USERID');
+			$inst->setColumn('sessions', 'token', 'VARCHAR(128) NOT NULL', 'SESSIONS_TOKEN');
+			$inst->setColumn('sessions', 'created', 'DATETIME NOT NULL', 'SESSIONS_CREATED');
+			$inst->setColumn('sessions', 'last_used', 'DATETIME NOT NULL', 'SESSIONS_LASTUSED');
+			$inst->setColumn('sessions', 'ip', 'VARCHAR(15)', 'SESSIONS_IP');
+			$inst->setIndex('sessions', 'users_id');
+			$inst->setRelation('sessions.users_id', 'users.id');
 
 			return $inst;
 		}

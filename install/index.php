@@ -95,12 +95,9 @@
 								ON DELETE " . $rel['ondelete'] . " 
 								ON UPDATE " . $rel['onupdate'];
 
-							echo $query;
 							$q = $this->_db->query($query);
 						}
 					}
-
-					// print_r($q);
 				}
 			}
 
