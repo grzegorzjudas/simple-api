@@ -81,18 +81,11 @@
 		}
 
 		protected function _getUserSession($token, $allowExpired = false) {
-			/* Validate SQL table/column names */
-			$token_lifetime = defined('SEC_TOKEN_LIFETIME') ? SEC_TOKEN_LIFETIME : 86400;
-			$table_sessions = defined('DB_TABLE_SESSIONS') ? DB_TABLE_SESSIONS : 'sessions';
-			$col_token = defined('DB_COL_TOKEN') ? DB_COL_TOKEN : 'token';
-			$col_created = defined('DB_COL_CREATED') ? DB_COL_CREATED : 'created';
-			$col_lastused = defined('DB_COL_LASTUSED') ? DB_COL_LASTUSED : 'last_used';
-
 			/* Get the token */
-			$query = "SELECT * FROM " . DB_TABLE_SESSIONS . " WHERE " . DB_COL_TOKEN . " = '" . $token . "'";
+			$query = "SELECT * FROM " . DB_TABLE_SESSIONS . " WHERE " . DB_COL_SESSIONS_TOKEN . " = '" . $token . "'";
 
 			if(!$allowExpired) {
-				$query .= " AND " . DB_COL_CREATED . " < NOW() AND " . DB_COL_CREATED . " + INTERVAL " . SEC_TOKEN_LIFETIME . " SECOND > NOW()";
+				$query .= " AND " . DB_COL_SESSIONS_CREATED . " < NOW() AND " . DB_COL_SESSIONS_CREATED . " + INTERVAL " . SEC_TOKEN_LIFETIME . " SECOND > NOW()";
 			}
 			$q = $this->_db->query($query);
 			

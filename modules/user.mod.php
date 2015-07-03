@@ -45,6 +45,15 @@
 		}
 
 		public function init() {
+			// $this->_method = 'POST';
+			// $_SERVER['PHP_AUTH_USER'] = hash(SEC_DATA_ENCRYPTION, 'ryumaster00');
+			// $_SERVER['PHP_AUTH_PW'] = hash(SEC_DATA_ENCRYPTION, 'tyki_mikk');
+
+			// $this->_data['login'] = hash(SEC_DATA_ENCRYPTION, 'ryumaster00');
+			// $this->_data['username'] = 'ryumaster00';
+			// $this->_data['password'] = hash(SEC_DATA_ENCRYPTION, 'tyki_mikk');
+			// $this->_data['email'] = 'grzegorz.judas@gmail.com';
+
 			switch($this->_method) {
 				case "GET": return $this->getFromToken();
 				case "POST": return $this->create();
@@ -146,14 +155,15 @@
 				null, 
 				'{$u[DB_COL_USERS_LOGIN]}', 
 				'{$u[DB_COL_USERS_USERNAME]}', 
-				'{$u[DB_COL_USERS_PWD]}', 
+				'{$u[DB_COL_USERS_PASSWORD]}', 
 				'{$u[DB_COL_USERS_EMAIL]}', 
 				0, 
 				FROM_UNIXTIME('$date'), 
 				$isActive)";
 			$q = $this->_db->query($query);
 
-			return Response::success(null, 201);
+			if(SEC_EMAIL_CONFIRM) return Response::success(Lang::get('user-register-mailsent'), 201);
+			else return Response::success(Lang::get('user-register-created'), 201);
 		}
 
 		public function isActivated($login) {
@@ -171,7 +181,7 @@
 			$query = "UPDATE " . DB_TABLE_USERS . " SET " . DB_COL_USERS_ACTIVATED . " = 1 WHERE " . DB_COL_USERS_LOGIN . " = '" . $login . "'";
 			$q = $this->_db->query($query);
 
-			return Response::success(null);
+			return Response::success(Lang::get('user-register-activated'));
 		}
 
 		public function signIn() {
@@ -187,11 +197,15 @@
 			$query = "SELECT * FROM " . DB_TABLE_USERS . " WHERE " . DB_COL_USERS_LOGIN . " = '" . $_SERVER['PHP_AUTH_USER'] . "'";
 			$q = $this->_db->query($query);
 
-			if(!$q || $q->num_rows === 0) return false;
+			if(!$q || $q->num_rows === 0) {
+				return Response::error('user-not-exist');
+			}
 
 			/* Check password */
 			$result = $q->fetch_assoc();
-			if($result[DB_COL_USERS_PASSWORD] !== $_SERVER['PHP_AUTH_PW']) return false;
+			if($result[DB_COL_USERS_PASSWORD] !== $_SERVER['PHP_AUTH_PW']) {
+				return Response::error('user-invalid-pwd');
+			}
 
 			/* Create and save token to db */
 			$time = time();

@@ -10,6 +10,7 @@
 	"user-not-elunique": "Użytkownik z podanym loginem lub adresem e-mail już istnieje.",
 	"user-not-lunique": "Użytkownik z podanym loginem już istnieje.",
 	"user-not-inactive": "Konto zostało już aktywowane.",
+	"user-not-exist": "Nie ma takiego użytkownika.",
 	"user-no-data": "Wymagane jest podanie użytkownika i hasła.",
 	"user-no-field": "Pole '{{FNAME}}' nie może być puste",
 	"user-expired-token": "Token wygasł.",
@@ -17,7 +18,11 @@
 	"user-invalid-email": "Podaj poprawny adres e-mail.",
 	"user-invalid-namelen": "Nazwa użytkownika musi mieć przynajmniej {{NLEN}} znaków.",
 	"user-invalid-pwdlen": "Hasło musi mieć przynajmniej {{PLEN}} znaków.",
+	"user-invalid-pwd": "Niepoprawne hasło.",
 	"user-no-requirements": "Nie wszystkie wymagane pola zostały podane.",
 	"user-register-mailtopic": "Witamy w systemie SimpleAPI!",
+	"user-register-mailsent": "Dziękujemy za rejestrację. Na podany adres e-mail została wysłana wiadomość aktywacyjna. Kliknij w podany w niej link, by aktywować konto.",
+	"user-register-activated": "Twoje konto zostało pomyślnie aktywowane. Możesz się teraz zalogować.",
+	"user-register-activated": "Twoje konto zostało utworzone. Możesz się teraz zalogować.",
 	"db-not-connected": "Brak połączenia z bazą danych."
 }
