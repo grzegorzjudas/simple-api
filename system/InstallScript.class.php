@@ -17,9 +17,8 @@
 			}
 		}
 
-		public function setColumn($table, $name, $params, $label = null) {
-			if(is_null($label)) $label = strtoupper($name);
-			$label = 'DB_COL_' . $label;
+		public function setColumn($table, $name, $params) {
+			$label = 'DB_COL_' . strtoupper($table) . '_' . strtoupper($name);
 
 			$this->data[$table][$name] = $params;
 			$this->labels[$table][$name] = $label;

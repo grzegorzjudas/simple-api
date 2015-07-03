@@ -7,6 +7,8 @@
 
 		public static function load() {
 			Headers::$data = Headers::parseHeaders(getallheaders());
+
+			array_unshift(Headers::$data['Accept'], 'application/json');
 		}
 
 		public static function get($name) {
