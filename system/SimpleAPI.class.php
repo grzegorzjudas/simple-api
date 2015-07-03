@@ -15,6 +15,7 @@
 
 		public function __construct() {
 			$this->_url = SimpleAPI::parseUrl();
+			$this->_loadConfigFiles();
 
 			Headers::load();
 			Responders::load();
@@ -128,6 +129,20 @@
 			DB::close();
 
 			return $this->createResponse($response);
+		}
+
+		public function _loadConfigFiles() {
+			require 'config/custom.conf.php';
+			require 'config/default.conf.php';
+
+			$dir = opendir('config/modules/');
+
+			while(($file = readdir($dir)) !== false) {
+				if($file === '.' || $file === '..') continue;
+				if(substr($file, -9) !== '.conf.php') continue;
+
+				include 'config/modules/' . $file;
+			}
 		}
 
 		public function createResponse($data) {

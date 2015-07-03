@@ -87,7 +87,7 @@
 		}
 
 		public function create() {
-			$this->_setFieldsRequired([DB_COL_USERS_USERNAME, DB_COL_USERS_PWD, DB_COL_USERS_EMAIL]);
+			$this->_setFieldsRequired([DB_COL_USERS_USERNAME, DB_COL_USERS_PASSWORD, DB_COL_USERS_EMAIL]);
 
 			/* Not all required fields available */
 			if(!$this->_requiredFieldsPresent()) {
@@ -100,7 +100,7 @@
 			}
 
 			/* Invalid password */
-			if(strlen($this->_data[DB_COL_USERS_PWD]) < SEC_PWD_MINLEN) {
+			if(strlen($this->_data[DB_COL_USERS_PASSWORD]) < SEC_PWD_MINLEN) {
 				return Response::verror('user-invalid-pwdlen', ['PLEN' => SEC_PWD_MINLEN]);
 			}
 
@@ -191,7 +191,7 @@
 
 			/* Check password */
 			$result = $q->fetch_assoc();
-			if($result[DB_COL_USERS_PWD] !== $_SERVER['PHP_AUTH_PW']) return false;
+			if($result[DB_COL_USERS_PASSWORD] !== $_SERVER['PHP_AUTH_PW']) return false;
 
 			/* Create and save token to db */
 			$time = time();

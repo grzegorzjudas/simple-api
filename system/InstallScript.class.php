@@ -55,8 +55,8 @@
 				$cfg .= PHP_EOL;
 			}
 
-			$filename = '../config/' . $moduleName . '.conf.php';
-			file_put_contents($filename, $cfg);
+			if(!is_dir('../config/modules/')) mkdir('../config/modules/');
+			file_put_contents('../config/modules/' . $moduleName . '.conf.php', $cfg);
 
 			return $cfg;
 		}

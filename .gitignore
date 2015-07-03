@@ -1,1 +1,2 @@
-config/custom/*
+config/custom.conf.php
+config/modules/
