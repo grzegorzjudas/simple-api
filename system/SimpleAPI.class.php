@@ -79,7 +79,7 @@
 				}
 			}
 
-			$result = $module->init();
+			$result = $module->{$module->callFunction}();
 
 			if($result instanceof Response) return $result;
 			else return Response::success($result);

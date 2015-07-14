@@ -1,14 +1,20 @@
 <?php
 
 	class MBase {
+		/* Available for modules */
 		protected $_params = [];
 		protected $_route = [];
 		protected $_method;
 		protected $_data;
 		protected $_db;
 
+		/* For SimpleAPI system use */
+		public $callFunction = 'init';
+		
+		/* Internal MBase variables */
 		private $routes = [];
 
+		/* Module requirements */
 		private $rDatabase = false;
 		private $rUser = false;
 		private $rRoute = false;
@@ -82,23 +88,30 @@
 			if(substr($currentRoute, -1) !== '/') $currentRoute = $currentRoute . '/';
 
 			foreach ($this->routes as $route) {
-				$rMatch = explode('/', $route);
+				$rMatch = explode('/', $route['route']);
 				$rFind = explode('/', $currentRoute);
 				$this->_route = [];
 
 				if(count($rMatch) !== count($rFind)) continue;
+				if(!in_array($this->_method, $route['methods'])) continue;
 
 				foreach ($rMatch as $index => $param) {
 					if(substr($param, 0, 1) !== ':') {
 						if($param !== $rFind[$index]) break;
 						else {
-							if($index === count($rMatch)-1) return true;
+							if($index === count($rMatch)-1) {
+								$this->callFunction = $route['f'];
+								return true;
+							}
 							else continue;
 						}
 					}
 					else {
 						$this->_route[substr($param, 1)] = $rFind[$index];
-						if($index === count($rMatch)-1) return true;
+						if($index === count($rMatch)-1) {
+							$this->callFunction = $route['f'];
+							return true;
+						}
 						else continue;
 					}
 				}
@@ -184,11 +197,19 @@
 			$this->rFields = $arr;
 		}
 
-		protected function _addRoute($route) {
+		protected function _addRoute($route, $methods = null, $f = 'init') {
 			if(substr($route, 0, 1) !== '/') $route = '/' . $route;
 			if(substr($route, -1, 1) !== '/') $route = $route . '/';
 
-			$this->routes[] = $route;
+			if(is_null($methods) || $methods === '*') $methods = ['DELETE', 'GET', 'OPTIONS', 'POST', 'PUT'];
+			if(gettype($methods) === 'string') $methods = [ $methods ];
+			if(is_null($f)) $f = 'init';
+
+			$this->routes[] = [
+				'route' => $route,
+				'methods' => $methods,
+				'f' => $f
+			];
 		}
 
 		private function _parseData() {

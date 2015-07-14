@@ -37,11 +37,15 @@
 			$this->_setAllowedMethods(['GET', 'PUT', 'DELETE']);
 			$this->_setStrictRouteMode(true);
 
-			$this->_addRoute('/:firstparam/');
-			$this->_addRoute('/:firstparam/test');
+			$this->_addRoute('/:firstparam/', '*');
+			$this->_addRoute('/:firstparam/test', ['GET', 'POST'], 'tester');
 		}
 
 		public function init() {
 			return Response::success($this->_params);
+		}
+
+		public function tester() {
+			return ['tester works'];
 		}
 	}
