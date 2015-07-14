@@ -26,6 +26,7 @@
 	/* Enable or disable Cross Origin requests */
 	define("SYSTEM_ALLOW_CROSSORIGIN", false); //unused
 
+	/* Allow multiple errors at once in responses */
 	define("SYSTEM_ALLOW_MULTIERRORS", false);
 
 	/* Use HTTP Authentication with token passed in HTTP Header */

@@ -39,21 +39,18 @@
 			return $inst;
 		}
 
-		public function setRequirements() {			
+		public function setRequirements() {
 			$this->_setDatabaseRequired(true);
 			$this->_setAllowedMethods(['GET', 'POST', 'PUT']);
+			$this->_setStrictRouteMode(true);
+
+			$this->_addRoute('login/', 'PUT', 'signIn');
+			$this->_addRoute('register/', 'POST', 'create');
+			$this->_addRoute('activate/:login/', 'GET', 'activate');
+			$this->_addRoute('/', 'GET', 'getFromToken');
 		}
 
 		public function init() {
-			// $this->_method = 'POST';
-			// $_SERVER['PHP_AUTH_USER'] = hash(SEC_DATA_ENCRYPTION, 'ryumaster00');
-			// $_SERVER['PHP_AUTH_PW'] = hash(SEC_DATA_ENCRYPTION, 'tyki_mikk');
-
-			// $this->_data['login'] = hash(SEC_DATA_ENCRYPTION, 'ryumaster00');
-			// $this->_data['username'] = 'ryumaster00';
-			// $this->_data['password'] = hash(SEC_DATA_ENCRYPTION, 'tyki_mikk');
-			// $this->_data['email'] = 'grzegorz.judas@gmail.com';
-
 			switch($this->_method) {
 				case "GET": return $this->getFromToken();
 				case "POST": return $this->create();
@@ -69,12 +66,10 @@
 			}
 
 			/* Token error */
-			if(!$this->_isUserSignedIn()) {
-				if(is_null($token)) return Response::error('user-not-signedin');
-				else {
-					if(!$this->_getUserSession($token, true)) return Response::error('user-invalid-token');
-					else return Response::error('user-expired-token');
-				}
+			if(is_null($token)) return Response::error('user-not-signedin');
+			if($this->_isUserSignedIn() === false) {
+				if(!$this->_getUserSession($token, true)) return Response::error('user-invalid-token');
+				else return Response::error('user-expired-token');
 			}
 
 			/* Fetch user data */
@@ -173,9 +168,20 @@
 			return $q->fetch_assoc()[DB_COL_USERS_ACTIVATED];
 		}
 
-		public function activate($login) {
+		public function activate($login = null) {
+			if(is_null($login)) {
+				$login = $this->_route['login'];
+			}
+
 			if($this->isActivated($login)) {
 				return Response::error('user-not-inactive');
+			}
+
+			$query = "SELECT " . DB_COL_USERS_ID . " FROM " . DB_TABLE_USERS . " WHERE " . DB_COL_USERS_LOGIN . " = '" . $login . "'";
+			$q = $this->_db->query($query);
+
+			if($q->num_rows === 0) {
+				return Response::error('user-not-exist');
 			}
 
 			$query = "UPDATE " . DB_TABLE_USERS . " SET " . DB_COL_USERS_ACTIVATED . " = 1 WHERE " . DB_COL_USERS_LOGIN . " = '" . $login . "'";
@@ -186,7 +192,7 @@
 
 		public function signIn() {
 			/* If already signed in, proxy to /GET */
-			if($this->_isUserSignedIn()) return $this->getUser();
+			if($this->_isUserSignedIn()) return $this->getFromToken();
 
 			/* Check if authorization data exists */
 			if(!$_SERVER['PHP_AUTH_USER'] || !$_SERVER['PHP_AUTH_PW']) {
@@ -205,6 +211,11 @@
 			$result = $q->fetch_assoc();
 			if($result[DB_COL_USERS_PASSWORD] !== $_SERVER['PHP_AUTH_PW']) {
 				return Response::error('user-invalid-pwd');
+			}
+
+			/* Is activated */
+			if(SEC_EMAIL_CONFIRM && $result[DB_COL_USERS_ACTIVATED] === '0') {
+				return Response::error('user-not-active');
 			}
 
 			/* Create and save token to db */

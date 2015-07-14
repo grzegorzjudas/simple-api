@@ -11,6 +11,7 @@
 	"user-not-elunique": "Użytkownik z podanym loginem lub adresem e-mail już istnieje.",
 	"user-not-lunique": "Użytkownik z podanym loginem już istnieje.",
 	"user-not-inactive": "Konto zostało już aktywowane.",
+	"user-not-active": "Konto jest nieaktywne. Kliknij w link podany w wiadomości e-mail wysłanej przez nas, by je aktywować.",
 	"user-not-exist": "Nie ma takiego użytkownika.",
 	"user-no-data": "Wymagane jest podanie użytkownika i hasła.",
 	"user-no-field": "Pole '{{FNAME}}' nie może być puste",

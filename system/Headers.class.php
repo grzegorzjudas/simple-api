@@ -9,7 +9,6 @@
 			Headers::$data = Headers::parseHeaders(getallheaders());
 
 			array_unshift(Headers::$data['Accept'], 'application/json');
-			// Headers::$data['Token'] = 'cbd495736e9d3c298d333185be01de69142948334e2098495e23c2d3c647f78904c1047fe2db65bc24be24c71233293d33813bdba6d9c23070eb76ea96cb0c42';
 		}
 
 		public static function get($name) {

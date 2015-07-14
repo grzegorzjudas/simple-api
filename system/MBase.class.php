@@ -76,7 +76,9 @@
 			if(!$this->_isDatabaseConnected()) return false;
 			if(is_null($token)) return false;
 
-			return !!$this->_getUserSession($token);
+
+			if($this->_getUserSession($token) !== false) return true;
+			else return false;
 		}
 
 		protected function _isValidRoute() {
@@ -149,7 +151,7 @@
 			$result = $q->fetch_assoc();
 
 			/* Token valid, update last used time */
-			$query = "UPDATE $table_sessions SET $col_lastused = NOW() WHERE id = {$result[id]}";
+			$query = "UPDATE " . DB_TABLE_SESSIONS . " SET " . DB_COL_SESSIONS_LAST_USED . " = NOW() WHERE id = {$result[id]}";
 			$this->_db->query($query);
 
 			return $result;
