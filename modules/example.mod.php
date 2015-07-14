@@ -35,6 +35,10 @@
 			$this->_setDatabaseRequired(true);
 			$this->_setUserRequired(true);
 			$this->_setAllowedMethods(['GET', 'PUT', 'DELETE']);
+			$this->_setStrictRouteMode(true);
+
+			$this->_addRoute('/:firstparam/');
+			$this->_addRoute('/:firstparam/test');
 		}
 
 		public function init() {

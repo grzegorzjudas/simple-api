@@ -2,12 +2,16 @@
 
 	class MBase {
 		protected $_params = [];
+		protected $_route = [];
 		protected $_method;
 		protected $_data;
 		protected $_db;
 
+		private $routes = [];
+
 		private $rDatabase = false;
 		private $rUser = false;
+		private $rRoute = false;
 		private $rFields = [];
 		private $rMethods = ['DELETE', 'GET', 'OPTIONS', 'POST', 'PUT'];
 
@@ -34,12 +38,17 @@
 			if(!$this->_isMethodAllowed()) {
 				Headers::set('Allow', $this->_getAllowedMethods());
 
-				return Response::error('system-invalid-method', 405);
+				return Response::error('module-invalid-method', 405);
 			}
 
 			/* Check if all fields are present */
 			if(!$this->_requiredFieldsPresent()) {
 				return Response::error('module-no-requirements');
+			}
+
+			/* Route whitelist enabled, and route did not match */
+			if($this->rRoute && !$this->_isValidRoute()) {
+				return Response::error('module-invalid-route', 404);
 			}
 
 			return true;
@@ -62,6 +71,40 @@
 			if(is_null($token)) return false;
 
 			return !!$this->_getUserSession($token);
+		}
+
+		protected function _isValidRoute() {
+			if(!$this->rRoute) return true;
+
+			$currentRoute = explode('/', $_SERVER['REQUEST_URI']);
+			unset($currentRoute[array_search($this->_getModuleName(), $currentRoute)]);
+			$currentRoute = implode('/', $currentRoute);
+			if(substr($currentRoute, -1) !== '/') $currentRoute = $currentRoute . '/';
+
+			foreach ($this->routes as $route) {
+				$rMatch = explode('/', $route);
+				$rFind = explode('/', $currentRoute);
+				$this->_route = [];
+
+				if(count($rMatch) !== count($rFind)) continue;
+
+				foreach ($rMatch as $index => $param) {
+					if(substr($param, 0, 1) !== ':') {
+						if($param !== $rFind[$index]) break;
+						else {
+							if($index === count($rMatch)-1) return true;
+							else continue;
+						}
+					}
+					else {
+						$this->_route[substr($param, 1)] = $rFind[$index];
+						if($index === count($rMatch)-1) return true;
+						else continue;
+					}
+				}
+			}
+
+			return in_array($currentRoute, $this->routes);
 		}
 
 		protected function _requiredFieldsPresent() {
@@ -125,6 +168,10 @@
 			$this->rMethods = $methods;
 		}
 
+		protected function _setStrictRouteMode($bool) {
+			$this->rRoute = !!$bool;
+		}
+
 		protected function _setDatabaseRequired($bool) {
 			$this->rDatabase = !!$bool;
 		}
@@ -135,6 +182,13 @@
 
 		protected function _setFieldsRequired($arr) {
 			$this->rFields = $arr;
+		}
+
+		protected function _addRoute($route) {
+			if(substr($route, 0, 1) !== '/') $route = '/' . $route;
+			if(substr($route, -1, 1) !== '/') $route = $route . '/';
+
+			$this->routes[] = $route;
 		}
 
 		private function _parseData() {
