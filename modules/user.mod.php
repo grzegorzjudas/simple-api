@@ -2,19 +2,13 @@
 
 	namespace Module\user;
 
-	use \Response;
-	use \Lang;
-	use \Headers;
-	use \SimpleAPI;
-	use \InstallScript;
-
 	class Module extends \MBase implements \MInterface {
 		/* protected $_method */
 		/* protected $_params */
 		/* protected $_data */
 
 		public function install() {
-			$inst = new InstallScript();
+			$inst = new \InstallScript();
 
 			$inst->setTable('users');
 			$inst->setColumn('users', 'id', 'INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY');
@@ -55,21 +49,21 @@
 				case "GET": return $this->getFromToken();
 				case "POST": return $this->create();
 				case "PUT": return $this->signIn();
-				default: return Response::error('module-invalid-method', 'Method Not Allowed');
+				default: return \Response::error('module-invalid-method', 'Method Not Allowed');
 			}
 		}
 
 		public function getFromToken($token = null) {
 			/* Get token if not provided */
 			if(is_null($token)) {
-				$token = SEC_TOKEN_HEADER ? Headers::get('Token') : $_COOKIE['Token'];
+				$token = SEC_TOKEN_HEADER ? \Headers::get('Token') : $_COOKIE['Token'];
 			}
 
 			/* Token error */
-			if(is_null($token)) return Response::error('user-not-signedin');
+			if(is_null($token)) return \Response::error('user-not-signedin');
 			if($this->_isUserSignedIn() === false) {
-				if(!$this->_getUserSession($token, true)) return Response::error('user-invalid-token');
-				else return Response::error('user-expired-token');
+				if(!$this->_getUserSession($token, true)) return \Response::error('user-invalid-token');
+				else return \Response::error('user-expired-token');
 			}
 
 			/* Fetch user data */
@@ -95,22 +89,22 @@
 
 			/* Not all required fields available */
 			if(!$this->_requiredFieldsPresent()) {
-				return Response::verror('user-no-field', ['FNAME' => $this->_getMissingField()]);
+				return \Response::verror('user-no-field', ['FNAME' => $this->_getMissingField()]);
 			}
 
 			/* Invalid username */
 			if(strlen($this->_data[DB_COL_USERS_USERNAME]) < SEC_USER_MINLEN) {
-				return Response::verror('user-invalid-namelen', ['NLEN' => SEC_USER_MINLEN]);
+				return \Response::verror('user-invalid-namelen', ['NLEN' => SEC_USER_MINLEN]);
 			}
 
 			/* Invalid password */
 			if(strlen($this->_data[DB_COL_USERS_PASSWORD]) < SEC_PWD_MINLEN) {
-				return Response::verror('user-invalid-pwdlen', ['PLEN' => SEC_PWD_MINLEN]);
+				return \Response::verror('user-invalid-pwdlen', ['PLEN' => SEC_PWD_MINLEN]);
 			}
 
 			/* Invalid e-mail */
 			if(!filter_var($this->_data[DB_COL_USERS_EMAIL], FILTER_VALIDATE_EMAIL)) {
-				return Response::error('user-invalid-email');
+				return \Response::error('user-invalid-email');
 			}
 
 			$u = $this->_data;
@@ -122,8 +116,8 @@
 			$q = $this->_db->query($query);
 
 			if($q->num_rows > 0) {
-				if(SEC_EMAIL_UNIQUE) return Response::error('user-not-elunique');
-				else return Response::error('user-not-lunique');
+				if(SEC_EMAIL_UNIQUE) return \Response::error('user-not-elunique');
+				else return \Response::error('user-not-lunique');
 			}
 
 			/* Send confirmation e-mail, if required */
@@ -140,7 +134,7 @@
 				$headers .= "MIME-Version: 1.0\n";
 				$headers .= "Content-Type: text/html; charset=" . SYSTEM_CHARSET_DEFAULT . "";
 
-				mail($u[DB_COL_USERS_EMAIL], Lang::get('user-register-mailtopic'), $tpl, $headers);
+				mail($u[DB_COL_USERS_EMAIL], \Lang::get('user-register-mailtopic'), $tpl, $headers);
 			}
 
 			$isActive = !SEC_EMAIL_CONFIRM ? 1 : 0;
@@ -157,8 +151,8 @@
 				$isActive)";
 			$q = $this->_db->query($query);
 
-			if(SEC_EMAIL_CONFIRM) return Response::success(Lang::get('user-register-mailsent'), 201);
-			else return Response::success(Lang::get('user-register-created'), 201);
+			if(SEC_EMAIL_CONFIRM) return \Response::success(\Lang::get('user-register-mailsent'), 201);
+			else return \Response::success(\Lang::get('user-register-created'), 201);
 		}
 
 		public function isActivated($login) {
@@ -174,20 +168,20 @@
 			}
 
 			if($this->isActivated($login)) {
-				return Response::error('user-not-inactive');
+				return \Response::error('user-not-inactive');
 			}
 
 			$query = "SELECT " . DB_COL_USERS_ID . " FROM " . DB_TABLE_USERS . " WHERE " . DB_COL_USERS_LOGIN . " = '" . $login . "'";
 			$q = $this->_db->query($query);
 
 			if($q->num_rows === 0) {
-				return Response::error('user-not-exist');
+				return \Response::error('user-not-exist');
 			}
 
 			$query = "UPDATE " . DB_TABLE_USERS . " SET " . DB_COL_USERS_ACTIVATED . " = 1 WHERE " . DB_COL_USERS_LOGIN . " = '" . $login . "'";
 			$q = $this->_db->query($query);
 
-			return Response::success(Lang::get('user-register-activated'));
+			return \Response::success(\Lang::get('user-register-activated'));
 		}
 
 		public function signIn() {
@@ -196,7 +190,7 @@
 
 			/* Check if authorization data exists */
 			if(!$_SERVER['PHP_AUTH_USER'] || !$_SERVER['PHP_AUTH_PW']) {
-				return Response::error('user-no-data');
+				return \Response::error('user-no-data');
 			}
 
 			/* Find the user with specified login */
@@ -204,18 +198,18 @@
 			$q = $this->_db->query($query);
 
 			if(!$q || $q->num_rows === 0) {
-				return Response::error('user-not-exist');
+				return \Response::error('user-not-exist');
 			}
 
 			/* Check password */
 			$result = $q->fetch_assoc();
 			if($result[DB_COL_USERS_PASSWORD] !== $_SERVER['PHP_AUTH_PW']) {
-				return Response::error('user-invalid-pwd');
+				return \Response::error('user-invalid-pwd');
 			}
 
 			/* Is activated */
 			if(SEC_EMAIL_CONFIRM && $result[DB_COL_USERS_ACTIVATED] === '0') {
-				return Response::error('user-not-active');
+				return \Response::error('user-not-active');
 			}
 
 			/* Create and save token to db */
@@ -226,7 +220,7 @@
 			$q = $this->_db->query($query);
 
 			/* Set Token header or cookie */
-			if(defined('SEC_TOKEN_HEADER') && SEC_TOKEN_HEADER) Headers::set('Token', $token);
+			if(defined('SEC_TOKEN_HEADER') && SEC_TOKEN_HEADER) \Headers::set('Token', $token);
 			else setcookie('Token', $token, SEC_TOKEN_LIFETIME);
 
 			/* Filter final value */

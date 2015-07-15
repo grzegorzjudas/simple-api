@@ -2,19 +2,13 @@
 
 	namespace Module\example;
 
-	use \Response;
-	use \Lang;
-	use \Headers;
-	use \SimpleAPI;
-	use \InstallScript;
-
 	class Module extends \MBase implements \MInterface {
 		/* protected $_method */
 		/* protected $_params */
 		/* protected $_data */
 
 		public function install() {
-			$inst = new InstallScript();
+			$inst = new \InstallScript();
 
 			$inst->setTable('example1');
 			$inst->setColumn('example1', 'id', 'INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY');
@@ -42,7 +36,7 @@
 		}
 
 		public function init() {
-			return Response::success($this->_params);
+			return \Response::success($this->_params);
 		}
 
 		public function tester() {
